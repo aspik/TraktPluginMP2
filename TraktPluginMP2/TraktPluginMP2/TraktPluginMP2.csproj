@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,11 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Media">
+      <HintPath>..\Externals\Media.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaPortal.Common">
+      <HintPath>..\Externals\MediaPortal.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaPortal.UI">
+      <HintPath>..\Externals\MediaPortal.UI.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,10 +57,78 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileName.cs" />
+    <Compile Include="Handlers\TraktHandler.cs" />
+    <Compile Include="Handlers\TraktHandlerContainer.cs" />
+    <Compile Include="Handlers\TraktHandlerManager.cs" />
+    <Compile Include="Models\ITraktNotificationModel.cs" />
+    <Compile Include="Models\TraktNotificationModel.cs" />
+    <Compile Include="Models\TraktSetupModel.cs" />
+    <Compile Include="Models\TraktSetupModelContainer.cs" />
+    <Compile Include="Models\TraktSetupModelManager.cs" />
+    <Compile Include="Notifications\ITraktNotification.cs" />
+    <Compile Include="Notifications\TraktScrobbleNotificationBase.cs" />
+    <Compile Include="Notifications\TraktScrobbleStartedNotification.cs" />
+    <Compile Include="Notifications\TraktScrobbleStoppedNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AsynchronousMessageQueueProxy.cs" />
+    <Compile Include="Services\FileOperations.cs" />
+    <Compile Include="Services\IAsynchronousMessageQueue.cs" />
+    <Compile Include="Services\IFileOperations.cs" />
+    <Compile Include="Services\IMediaPortalServices.cs" />
+    <Compile Include="Services\ITraktCache.cs" />
+    <Compile Include="Services\ITraktClient.cs" />
+    <Compile Include="Services\ITraktSettingsChangeWatcher.cs" />
+    <Compile Include="Services\IUserMessageHandler.cs" />
+    <Compile Include="Services\MediaPortalServices.cs" />
+    <Compile Include="Services\TraktCache.cs" />
+    <Compile Include="Services\TraktClientProxy.cs" />
+    <Compile Include="Services\TraktSettingsChangeWatcher.cs" />
+    <Compile Include="Services\UserMessageHandlerProxy.cs" />
+    <Compile Include="Settings\Configuration\ScrobbleStartedNotificationSetting.cs" />
+    <Compile Include="Settings\Configuration\ScrobbleStoppedNotificationSetting.cs" />
+    <Compile Include="Settings\Configuration\TraktSettingsConfiguration.cs" />
+    <Compile Include="Settings\IsScrobbleEnabled.cs" />
+    <Compile Include="Settings\TraktPluginSettings.cs" />
+    <Compile Include="Structures\Episode.cs" />
+    <Compile Include="Structures\EpisodeCollected.cs" />
+    <Compile Include="Structures\EpisodeWatched.cs" />
+    <Compile Include="Structures\ListActivity.cs" />
+    <Compile Include="TraktSyncEpisodesResult.cs" />
+    <Compile Include="TraktSyncMoviesResult.cs" />
+    <Compile Include="Utilities\EnumerableExtensions.cs" />
+    <Compile Include="Utilities\MediaItemAspectsUtl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Language\strings_en.xml" />
+    <Content Include="plugin.xml" />
+    <Content Include="Skin\default\Images\qr.png" />
+    <Content Include="Skin\default\Images\trakt.png" />
+    <Content Include="Skin\default\Images\TraktLarge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Skin\BlueVision\themes\Titanium Extended\screens\dialogTraktSetup.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Skin\default\screens\dialogTraktSetup.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Skin\default\screens\TraktNotificationBare.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Skin\default\screens\TraktNotificationScrobble.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Skin\default\superlayers\TraktScrobbleStartedNotification.xaml" />
+    <Content Include="Skin\default\superlayers\TraktScrobbleStoppedNotification.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Skin\default\themes\default\styles\TraktConsts.xaml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

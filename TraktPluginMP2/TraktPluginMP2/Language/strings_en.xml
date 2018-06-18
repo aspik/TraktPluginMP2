@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  
+  <string name="Trakt.PinAndQrCodeGroup">Connect with Trakt</string>
+  
+  <string name="Trakt.Description.Line1">Go to http://trakt.tv/pin/6601 or scan the QR code</string>
+  <string name="Trakt.Description.Line2">Enter below the received pincode and press 'Authorize'</string>
+  
+  <string name="Trakt.Authorize">Authorize</string>
+  <string name="Trakt.Sync">Sync with trakt</string>
+  <string name="Trakt.Close">Close</string>
+  
+  <string name="Trakt.SyncMovies">Synchronizing movies...</string>
+  <string name="Trakt.SyncSeries">Synchronizing series...</string>
+  <string name="Trakt.SyncFinished">Synchronization complete!</string>
+  <string name="Trakt.MediaLibraryNotConnected">Server is currently not connected. Synchronize with Trakt is not possible</string>
+
+  <string name="Trakt.NotAuthorized">MediaPortal2 is not yet authorized to sync with Trakt</string>
+  <string name="Trakt.AlreadyAuthorized">Trakt is already authorized</string>
+  <string name="Trakt.AuthorizationSucceed">Trakt authorization succeed</string>
+  <string name="Trakt.AuthorizationFailed">Trakt authorization failed</string>
+
+  <string name="Settings.Plugins.Trakt">Trakt</string>
+  <string name="Settings.Plugins.Trakt.IsScrobbleEnabled">Enable scrobble</string>
+
+  <string name="Settings.Plugins.Trakt.ScrobbleStartNotifications">Scrobble start notifications</string>
+  <string name="Settings.Plugins.Trakt.ScrobbleStartNotifications.Help">Configure scrobble start notifications</string>
+  <string name="Settings.Plugins.Trakt.ScrobbleStopNotifications">Scrobble stop notifications</string>
+  <string name="Settings.Plugins.Trakt.ScrobbleStopNotifications.Help">Configure scrobble stop notifications</string>
+  
+  <string name="Settings.Plugins.Trakt.ShowScrobbleNotificationAlways">Always show notification</string>
+  <string name="Settings.Plugins.Trakt.ShowScrobbleNotificationOnFailure">Show only on failure</string>
+  <string name="Settings.Plugins.Trakt.DisableScrobbleNotifications">Disable notifications</string>  
+  
+  <string name="Settings.Plugins.Trakt.IsScrobbleEnabled.Help">Enables scrobble to Trakt</string>
+  <string name="Settings.Plugins.Trakt.TraktSetup">Authorization and syncing</string>
+  <string name="Settings.Plugins.Trakt.TraktSetup.Help">Authorize trakt and synchronize your library with trakt</string>
+
+  <string name="Trakt.ScrobbleStartedHeader">Scrobble started</string>
+  <string name="Trakt.ScrobbleStoppedHeader">Scrobble stopped</string>
+
+</resources>

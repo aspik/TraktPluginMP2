@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraktPluginMP2", "TraktPluginMP2\TraktPluginMP2.csproj", "{EC0BDA44-9795-40F4-9231-109DC8B0E870}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{2E3DF5C2-8A38-4A03-86D7-8D463C917E47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EC0BDA44-9795-40F4-9231-109DC8B0E870} = {EC0BDA44-9795-40F4-9231-109DC8B0E870}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

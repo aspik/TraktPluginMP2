@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tests</RootNamespace>
     <AssemblyName>Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -20,6 +20,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,6 +43,12 @@
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.2.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaPortal.Common">
+      <HintPath>..\Externals\MediaPortal.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaPortal.UI">
+      <HintPath>..\Externals\MediaPortal.UI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -90,12 +98,57 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestData\Cache\CollectedEpisodesTestData.cs" />
+    <Compile Include="TestData\Cache\CollectedMoviesTestData.cs" />
+    <Compile Include="TestData\Cache\UnWatchedEpisodesTestData.cs" />
+    <Compile Include="TestData\Cache\UnWatchedMoviesTestData.cs" />
+    <Compile Include="TestData\Cache\WatchedEpisodesTestData.cs" />
+    <Compile Include="TestData\Cache\WatchedMoviesTestData.cs" />
+    <Compile Include="TestData\Handler\StartScrobbleMovieTestData.cs" />
+    <Compile Include="TestData\Handler\StartScrobbleSeriesTestData.cs" />
+    <Compile Include="TestData\Handler\StopScrobbleMovieTestData.cs" />
+    <Compile Include="TestData\Handler\StopScrobbleSeriesTestData.cs" />
+    <Compile Include="TestData\Setup\CollectedEpisodesTestData.cs" />
+    <Compile Include="TestData\Setup\CollectedMoviesTestData.cs" />
+    <Compile Include="TestData\Setup\MockedDatabaseEpisode.cs" />
+    <Compile Include="TestData\Setup\MockedDatabaseMovie.cs" />
+    <Compile Include="TestData\Setup\TraktUnWatchedEpisodesTestData.cs" />
+    <Compile Include="TestData\Setup\TraktUnwatchedMoviesTestData.cs" />
+    <Compile Include="TestData\Setup\TraktWatchedEpisodesTestData.cs" />
+    <Compile Include="TestData\Setup\TraktWatchedMoviesTestData.cs" />
+    <Compile Include="TestData\Setup\WatchedEpisodesTestData.cs" />
+    <Compile Include="TestData\Setup\WatchedMoviesTestData.cs" />
+    <Compile Include="TestUtility.cs" />
+    <Compile Include="TraktCacheTests.cs" />
+    <Compile Include="TraktHandlerTests.cs" />
+    <Compile Include="TraktSetupTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="TestData\Cache\collected.episodes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\Cache\collected.movies.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\Cache\last.sync.activities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\Cache\watched.episodes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestData\Cache\watched.movies.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.7.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TraktPluginMP2\TraktPluginMP2.csproj">
+      <Project>{ec0bda44-9795-40f4-9231-109dc8b0e870}</Project>
+      <Name>TraktPluginMP2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

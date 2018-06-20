@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using MediaPortal.Common.General;
-using MediaPortal.Common.Threading;
 using MediaPortal.Common.MediaManagement;
 using MediaPortal.Common.MediaManagement.DefaultItemAspects;
 using MediaPortal.Common.MediaManagement.MLQueries;
@@ -17,177 +14,31 @@ using TraktApiSharp.Objects.Basic;
 using TraktApiSharp.Objects.Get.Collection;
 using TraktApiSharp.Objects.Get.Movies;
 using TraktApiSharp.Objects.Get.Shows;
-using TraktApiSharp.Objects.Get.Syncs.Activities;
-using TraktApiSharp.Objects.Get.Users;
 using TraktApiSharp.Objects.Get.Watched;
 using TraktApiSharp.Objects.Post;
 using TraktApiSharp.Objects.Post.Syncs.Collection;
 using TraktApiSharp.Objects.Post.Syncs.Collection.Responses;
 using TraktApiSharp.Objects.Post.Syncs.History;
 using TraktApiSharp.Objects.Post.Syncs.History.Responses;
-using TraktPluginMP2.Services;
+using TraktPluginMP2.Exceptions;
 using TraktPluginMP2.Structures;
 using TraktPluginMP2.Utilities;
 
-namespace TraktPluginMP2.Models
+namespace TraktPluginMP2.Services
 {
-  public class TraktSetupModelManager
+  public class LibrarySynchronization : ILibrarySynchronization
   {
     private readonly IMediaPortalServices _mediaPortalServices;
     private readonly ITraktClient _traktClient;
     private readonly ITraktCache _traktCache;
     private readonly IFileOperations _fileOperations;
 
-    private readonly AbstractProperty _isScrobbleEnabledProperty = new WProperty(typeof(bool), false);
-    private readonly AbstractProperty _isUserAuthorizedProperty = new WProperty(typeof(bool), false);
-    private readonly AbstractProperty _testStatusProperty = new WProperty(typeof(string), string.Empty);
-    private readonly AbstractProperty _pinCodeProperty = new WProperty(typeof(string), null);
-    private readonly AbstractProperty _isSynchronizingProperty = new WProperty(typeof(bool), false);
-
-    public TraktSetupModelManager(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, ITraktCache traktCache, IFileOperations fileOperations)
+    public LibrarySynchronization(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, ITraktCache traktCache, IFileOperations fileOperations)
     {
       _mediaPortalServices = mediaPortalServices;
       _traktClient = traktClient;
       _traktCache = traktCache;
       _fileOperations = fileOperations;
-    }
-
-    public AbstractProperty IsScrobbleEnabledProperty
-    {
-      get { return _isScrobbleEnabledProperty; }
-    }
-
-    public bool IsScrobbleEnabled
-    {
-      get { return (bool)_isScrobbleEnabledProperty.GetValue(); }
-      set { _isScrobbleEnabledProperty.SetValue(value); }
-    }
-
-    public AbstractProperty IsUserAuthorizedProperty
-    {
-      get { return _isUserAuthorizedProperty; }
-    }
-
-    public bool IsUserAuthorized
-    {
-      get { return (bool)_isUserAuthorizedProperty.GetValue(); }
-      set { _isUserAuthorizedProperty.SetValue(value); }
-    }
-
-    public AbstractProperty TestStatusProperty
-    {
-      get { return _testStatusProperty; }
-    }
-
-    public string TestStatus
-    {
-      get { return (string)_testStatusProperty.GetValue(); }
-      set { _testStatusProperty.SetValue(value); }
-    }
-
-    public AbstractProperty PinCodeProperty
-    {
-      get { return _pinCodeProperty; }
-    }
-
-    public string PinCode
-    {
-      get { return (string)_pinCodeProperty.GetValue(); }
-      set { _pinCodeProperty.SetValue(value); }
-    }
-
-    public AbstractProperty IsSynchronizingProperty
-    {
-      get { return _isSynchronizingProperty; }
-    }
-
-    public bool IsSynchronizing
-    {
-      get { return (bool)_isSynchronizingProperty.GetValue(); }
-      set { _isSynchronizingProperty.SetValue(value); }
-    }
-
-    public void Initialize()
-    {
-      // clear the PIN code text box, necessary when entering the plugin
-      PinCode = string.Empty;
-
-      string authFilePath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.Authorization.Value);
-      bool savedAuthFileExists = _fileOperations.FileExists(authFilePath);
-      if (!savedAuthFileExists)
-      {
-        TestStatus = "[Trakt.NotAuthorized]";
-        IsUserAuthorized = false;
-      }
-      else
-      {
-        string savedAuthorization = _fileOperations.FileReadAllText(authFilePath);
-        TraktAuthorization savedAuthFile = JsonConvert.DeserializeObject<TraktAuthorization>(savedAuthorization);
-        if (savedAuthFile.IsRefreshPossible)
-        {
-          TestStatus = "[Trakt.AlreadyAuthorized]";
-          IsUserAuthorized = true;
-        }
-        else
-        {
-          TestStatus = "[Trakt.SavedAuthIsNotValid]";
-          IsUserAuthorized = false;
-        }
-      }
-    }
-
-    public void AuthorizeUser()
-    {
-      try
-      {
-        TraktAuthorization authorization = _traktClient.GetAuthorization(PinCode);
-        TraktUserSettings traktUserSettings = _traktClient.GetTraktUserSettings();
-        TraktSyncLastActivities traktSyncLastActivities = _traktClient.GetLastActivities();
-
-        string traktUserHomePath = _mediaPortalServices.GetTraktUserHomePath();
-        if (!Directory.Exists(traktUserHomePath))
-        {
-          Directory.CreateDirectory(traktUserHomePath);
-        }
-
-        SaveTraktAuthorization(authorization, traktUserHomePath);
-        SaveTraktUserSettings(traktUserSettings, traktUserHomePath);
-        SaveLastSyncActivities(traktSyncLastActivities, traktUserHomePath);
-
-        TestStatus = "[Trakt.AuthorizationSucceed]";
-        IsUserAuthorized = true;
-      }
-      catch (Exception ex)
-      {
-        TestStatus = "[Trakt.AuthorizationFailed]";
-        _mediaPortalServices.GetLogger().Error(ex);
-        IsUserAuthorized = false;
-      }
-    }
-
-    public void SyncMediaToTrakt()
-    {
-      if (!IsSynchronizing)
-      {
-        try
-        {
-          IsSynchronizing = true;
-          IThreadPool threadPool = _mediaPortalServices.GetThreadPool();
-          threadPool.Add(() =>
-          {
-            SyncMovies();
-            SyncSeries();
-            IsSynchronizing = false;
-            TestStatus = "[Trakt.SyncFinished]";
-          },ThreadPriority.BelowNormal);
-          
-        }
-        catch (Exception ex)
-        {
-          TestStatus = "[Trakt.SyncingFailed]";
-          _mediaPortalServices.GetLogger().Error(ex.Message);
-        }
-      }
     }
 
     public TraktSyncMoviesResult SyncMovies()
@@ -201,7 +52,6 @@ namespace TraktPluginMP2.Models
       IList<TraktWatchedMovie> traktWatchedMovies = _traktCache.GetWatchedMovies().ToList();
       IList<TraktCollectionMovie> traktCollectedMovies = _traktCache.GetCollectedMovies().ToList();
 
-      TestStatus = "[Trakt.SyncMovies]";
       Guid[] types =
       {
         MediaAspect.ASPECT_ID, MovieAspect.ASPECT_ID, VideoAspect.ASPECT_ID, ImporterAspect.ASPECT_ID,
@@ -211,8 +61,7 @@ namespace TraktPluginMP2.Models
       IContentDirectory contentDirectory = _mediaPortalServices.GetServerConnectionManager().ContentDirectory;
       if (contentDirectory == null)
       {
-        TestStatus = "[Trakt.MediaLibraryNotConnected]";
-        throw new Exception("Media library not connected.");
+        throw new MediaLibraryNotConnectedException("ML not connected");
       }
 
       Guid? userProfile = null;
@@ -231,7 +80,7 @@ namespace TraktPluginMP2.Models
         syncMoviesResult.CollectedInLibrary = collectedMovies.Count;
         _mediaPortalServices.GetLogger().Info("Trakt: found {0} collected movies available to sync in media library", collectedMovies.Count);
       }
-      
+
       List<MediaItem> watchedMovies = collectedMovies.Where(MediaItemAspectsUtl.IsWatched).ToList();
 
       if (watchedMovies.Any())
@@ -304,18 +153,18 @@ namespace TraktPluginMP2.Models
       _mediaPortalServices.GetLogger().Info("Trakt: finding movies to add to watched history");
 
       List<TraktSyncHistoryPostMovie> syncWatchedMovies = (from movie in watchedMovies
-        where !traktWatchedMovies.ToList().Exists(c => MovieMatch(movie, c.Movie))
-        select new TraktSyncHistoryPostMovie
-        {
-          Ids = new TraktMovieIds
-          {
-            Imdb = MediaItemAspectsUtl.GetMovieImdbId(movie),
-            Tmdb = MediaItemAspectsUtl.GetMovieTmdbId(movie)
-          },
-          Title = MediaItemAspectsUtl.GetMovieTitle(movie),
-          Year = MediaItemAspectsUtl.GetMovieYear(movie),
-          WatchedAt = MediaItemAspectsUtl.GetLastPlayedDate(movie),
-        }).ToList();
+                                                           where !traktWatchedMovies.ToList().Exists(c => MovieMatch(movie, c.Movie))
+                                                           select new TraktSyncHistoryPostMovie
+                                                           {
+                                                             Ids = new TraktMovieIds
+                                                             {
+                                                               Imdb = MediaItemAspectsUtl.GetMovieImdbId(movie),
+                                                               Tmdb = MediaItemAspectsUtl.GetMovieTmdbId(movie)
+                                                             },
+                                                             Title = MediaItemAspectsUtl.GetMovieTitle(movie),
+                                                             Year = MediaItemAspectsUtl.GetMovieYear(movie),
+                                                             WatchedAt = MediaItemAspectsUtl.GetLastPlayedDate(movie),
+                                                           }).ToList();
 
       if (syncWatchedMovies.Any())
       {
@@ -337,26 +186,26 @@ namespace TraktPluginMP2.Models
       _mediaPortalServices.GetLogger().Info("Trakt: finding movies to add to collection");
 
       List<TraktSyncCollectionPostMovie> syncCollectedMovies = (from movie in collectedMovies
-        where !traktCollectedMovies.ToList().Exists(c => MovieMatch(movie, c.Movie))
-        select new TraktSyncCollectionPostMovie
-        {
-          Metadata = new TraktMetadata
-          {
-            MediaType = MediaItemAspectsUtl.GetVideoMediaType(movie),
-            MediaResolution = MediaItemAspectsUtl.GetVideoResolution(movie),
-            Audio = MediaItemAspectsUtl.GetVideoAudioCodec(movie),
-            AudioChannels = MediaItemAspectsUtl.GetVideoAudioChannel(movie),
-            ThreeDimensional = false
-          },
-          Ids = new TraktMovieIds
-          {
-            Imdb = MediaItemAspectsUtl.GetMovieImdbId(movie),
-            Tmdb = MediaItemAspectsUtl.GetMovieTmdbId(movie)
-          },
-          Title = MediaItemAspectsUtl.GetMovieTitle(movie),
-          Year = MediaItemAspectsUtl.GetMovieYear(movie),
-          CollectedAt = MediaItemAspectsUtl.GetDateAddedToDb(movie)
-        }).ToList();
+                                                                where !traktCollectedMovies.ToList().Exists(c => MovieMatch(movie, c.Movie))
+                                                                select new TraktSyncCollectionPostMovie
+                                                                {
+                                                                  Metadata = new TraktMetadata
+                                                                  {
+                                                                    MediaType = MediaItemAspectsUtl.GetVideoMediaType(movie),
+                                                                    MediaResolution = MediaItemAspectsUtl.GetVideoResolution(movie),
+                                                                    Audio = MediaItemAspectsUtl.GetVideoAudioCodec(movie),
+                                                                    AudioChannels = MediaItemAspectsUtl.GetVideoAudioChannel(movie),
+                                                                    ThreeDimensional = false
+                                                                  },
+                                                                  Ids = new TraktMovieIds
+                                                                  {
+                                                                    Imdb = MediaItemAspectsUtl.GetMovieImdbId(movie),
+                                                                    Tmdb = MediaItemAspectsUtl.GetMovieTmdbId(movie)
+                                                                  },
+                                                                  Title = MediaItemAspectsUtl.GetMovieTitle(movie),
+                                                                  Year = MediaItemAspectsUtl.GetMovieYear(movie),
+                                                                  CollectedAt = MediaItemAspectsUtl.GetDateAddedToDb(movie)
+                                                                }).ToList();
 
       if (syncCollectedMovies.Any())
       {
@@ -386,7 +235,6 @@ namespace TraktPluginMP2.Models
       IList<EpisodeWatched> traktWatchedEpisodes = _traktCache.GetWatchedEpisodes().ToList();
       IList<EpisodeCollected> traktCollectedEpisodes = _traktCache.GetCollectedEpisodes().ToList();
 
-      TestStatus = "[Trakt.SyncSeries]";
       Guid[] types =
       {
         MediaAspect.ASPECT_ID, EpisodeAspect.ASPECT_ID, VideoAspect.ASPECT_ID, ImporterAspect.ASPECT_ID,
@@ -395,8 +243,7 @@ namespace TraktPluginMP2.Models
       var contentDirectory = _mediaPortalServices.GetServerConnectionManager().ContentDirectory;
       if (contentDirectory == null)
       {
-        TestStatus = "[Trakt.MediaLibraryNotConnected]";
-        throw new Exception("Media library not connected.");
+        throw new MediaLibraryNotConnectedException("ML not connected");
       }
 
       Guid? userProfile = null;
@@ -505,7 +352,7 @@ namespace TraktPluginMP2.Models
           _mediaPortalServices.GetLogger().Info("Trakt: successfully added {0} watched episodes to trakt watched history", response.Added.Episodes.Value);
         }
       }
-     
+
       #endregion
 
       #region Add episodes to collection at trakt.tv
@@ -545,27 +392,6 @@ namespace TraktPluginMP2.Models
         string serializedAuth = JsonConvert.SerializeObject(refreshedAuth);
         _fileOperations.FileWriteAllText(authFilePath, serializedAuth, Encoding.UTF8);
       }
-    }
-
-    private void SaveTraktAuthorization(TraktAuthorization authorization, string path)
-    {
-      string serializedAuthorization = JsonConvert.SerializeObject(authorization);
-      string authorizationFilePath = Path.Combine(path, FileName.Authorization.Value);
-      _fileOperations.FileWriteAllText(authorizationFilePath, serializedAuthorization, Encoding.UTF8);
-    }
-
-    private void SaveTraktUserSettings(TraktUserSettings traktUserSettings, string path)
-    {
-      string serializedSettings = JsonConvert.SerializeObject(traktUserSettings);
-      string settingsFilePath = Path.Combine(path, FileName.UserSettings.Value);
-      _fileOperations.FileWriteAllText(settingsFilePath, serializedSettings, Encoding.UTF8);
-    }
-
-    private void SaveLastSyncActivities(TraktSyncLastActivities traktSyncLastActivities, string path)
-    {
-      string serializedSyncActivities = JsonConvert.SerializeObject(traktSyncLastActivities, Formatting.Indented);
-      string syncActivitiesFilePath = Path.Combine(path, FileName.LastActivity.Value);
-      _fileOperations.FileWriteAllText(syncActivitiesFilePath, serializedSyncActivities, Encoding.UTF8);
     }
 
     /// <summary>

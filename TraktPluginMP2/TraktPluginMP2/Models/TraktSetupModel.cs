@@ -1,77 +1,111 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading;
 using MediaPortal.Common.General;
+using MediaPortal.Common.Threading;
 using MediaPortal.UI.Presentation.Models;
 using MediaPortal.UI.Presentation.Workflow;
+using Newtonsoft.Json;
+using TraktApiSharp.Authentication;
+using TraktApiSharp.Objects.Get.Syncs.Activities;
+using TraktApiSharp.Objects.Get.Users;
+using TraktPluginMP2.Exceptions;
+using TraktPluginMP2.Services;
 
 namespace TraktPluginMP2.Models
 {
   public class TraktSetupModel : IWorkflowModel
   {
+    const string ApplicationId = "aea41e88de3cd0f8c8b2404d84d2e5d7317789e67fad223eba107aea2ef59068";
+    const string SecretId = "adafedb5cd065e6abeb9521b8b64bc66adb010a7c08128811bf32c989f35b77a";
+
     private static readonly Guid TRAKT_SETUP_MODEL_ID = new Guid("0A24888F-63C0-442A-9DF6-431869BDE803");
 
-    private readonly TraktSetupModelManager _manager;
+    private readonly IMediaPortalServices _mediaPortalServices;
+    private readonly ITraktClient _traktClient;
+    private readonly IFileOperations _fileOperations;
+    private readonly ILibrarySynchronization _librarySynchronization;
+
+    private readonly AbstractProperty _isScrobbleEnabledProperty = new WProperty(typeof(bool), false);
+    private readonly AbstractProperty _isUserAuthorizedProperty = new WProperty(typeof(bool), false);
+    private readonly AbstractProperty _testStatusProperty = new WProperty(typeof(string), string.Empty);
+    private readonly AbstractProperty _pinCodeProperty = new WProperty(typeof(string), null);
+    private readonly AbstractProperty _isSynchronizingProperty = new WProperty(typeof(bool), false);
 
     public TraktSetupModel()
     {
-      _manager = TraktSetupModelContainer.ResolveManager();
+      _mediaPortalServices = new MediaPortalServices();
+      _traktClient = new TraktClientProxy(ApplicationId, SecretId);
+      _fileOperations = new FileOperations();
+      ITraktCache traktCache = new TraktCache(_mediaPortalServices, _traktClient, _fileOperations);
+      _librarySynchronization = new LibrarySynchronization(_mediaPortalServices, _traktClient, traktCache,_fileOperations);
+    }
+
+    public TraktSetupModel(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, ILibrarySynchronization librarySynchronization, IFileOperations fileOperations)
+    {
+      _mediaPortalServices = mediaPortalServices;
+      _traktClient = traktClient;
+      _fileOperations = fileOperations;
+      _librarySynchronization = librarySynchronization;
     }
 
     #region Public properties - Bindable Data
 
     public AbstractProperty IsScrobbleEnabledProperty
     {
-      get { return _manager.IsScrobbleEnabledProperty; }
+      get { return _isScrobbleEnabledProperty; }
     }
 
     public bool IsScrobbleEnabled
     {
-      get { return _manager.IsScrobbleEnabled; }
-      set { _manager.IsScrobbleEnabled = value; }
+      get { return (bool)_isScrobbleEnabledProperty.GetValue(); }
+      set { _isScrobbleEnabledProperty.SetValue(value); }
     }
 
     public AbstractProperty IsUserAuthorizedProperty
     {
-      get { return _manager.IsUserAuthorizedProperty; }
+      get { return _isUserAuthorizedProperty; }
     }
 
     public bool IsUserAuthorized
     {
-      get { return _manager.IsUserAuthorized; }
-      set { _manager.IsUserAuthorized = value; }
+      get { return (bool)_isUserAuthorizedProperty.GetValue(); }
+      set { _isUserAuthorizedProperty.SetValue(value); }
     }
 
     public AbstractProperty TestStatusProperty
     {
-      get { return _manager.TestStatusProperty; }
+      get { return _testStatusProperty; }
     }
 
     public string TestStatus
     {
-      get { return _manager.TestStatus; }
-      set { _manager.TestStatus = value; }
+      get { return (string)_testStatusProperty.GetValue(); }
+      set { _testStatusProperty.SetValue(value); }
     }
 
     public AbstractProperty PinCodeProperty
     {
-      get { return _manager.PinCodeProperty; }
+      get { return _pinCodeProperty; }
     }
 
     public string PinCode
     {
-      get { return _manager.PinCode; }
-      set { _manager.PinCode = value; }
+      get { return (string)_pinCodeProperty.GetValue(); }
+      set { _pinCodeProperty.SetValue(value); }
     }
 
     public AbstractProperty IsSynchronizingProperty
     {
-      get { return _manager.IsSynchronizingProperty; }
+      get { return _isSynchronizingProperty; }
     }
 
     public bool IsSynchronizing
     {
-      get { return _manager.IsSynchronizing; }
-      set { _manager.IsSynchronizing = value; }
+      get { return (bool)_isSynchronizingProperty.GetValue(); }
+      set { _isSynchronizingProperty.SetValue(value); }
     }
 
     #endregion
@@ -80,13 +114,62 @@ namespace TraktPluginMP2.Models
 
     public void AuthorizeUser()
     {
-      _manager.AuthorizeUser();
+      try
+      {
+        TraktAuthorization authorization = _traktClient.GetAuthorization(PinCode);
+        TraktUserSettings traktUserSettings = _traktClient.GetTraktUserSettings();
+        TraktSyncLastActivities traktSyncLastActivities = _traktClient.GetLastActivities();
+
+        string traktUserHomePath = _mediaPortalServices.GetTraktUserHomePath();
+        if (!Directory.Exists(traktUserHomePath))
+        {
+          Directory.CreateDirectory(traktUserHomePath);
+        }
+
+        SaveTraktAuthorization(authorization, traktUserHomePath);
+        SaveTraktUserSettings(traktUserSettings, traktUserHomePath);
+        SaveLastSyncActivities(traktSyncLastActivities, traktUserHomePath);
+
+        TestStatus = "[Trakt.AuthorizationSucceed]";
+        IsUserAuthorized = true;
+      }
+      catch (Exception ex)
+      {
+        TestStatus = "[Trakt.AuthorizationFailed]";
+        _mediaPortalServices.GetLogger().Error(ex);
+        IsUserAuthorized = false;
+      }
     }
 
     public void SyncMediaToTrakt()
     {
-      _manager.SyncMediaToTrakt();
-
+      if (!IsSynchronizing)
+      {
+        try
+        {
+          IsSynchronizing = true;
+          IThreadPool threadPool = _mediaPortalServices.GetThreadPool();
+          threadPool.Add(() =>
+          {
+            TestStatus = "[Trakt.SyncSeries]";
+            _librarySynchronization.SyncMovies();
+            TestStatus = "[Trakt.SyncMovies]";
+            _librarySynchronization.SyncSeries();
+            IsSynchronizing = false;
+            TestStatus = "[Trakt.SyncFinished]";
+          }, ThreadPriority.BelowNormal);
+        }
+        catch (MediaLibraryNotConnectedException ex)
+        {
+          TestStatus = "[Trakt.MediaLibraryNotConnected]";
+          _mediaPortalServices.GetLogger().Error(ex.Message);
+        }
+        catch (Exception ex)
+        {
+          TestStatus = "[Trakt.SyncingFailed]";
+          _mediaPortalServices.GetLogger().Error(ex.Message);
+        }
+      }
     }
 
     #endregion
@@ -98,7 +181,31 @@ namespace TraktPluginMP2.Models
 
     public void EnterModelContext(NavigationContext oldContext, NavigationContext newContext)
     {
-      _manager.Initialize();
+      // clear the PIN code text box, necessary when entering the plugin
+      PinCode = string.Empty;
+
+      string authFilePath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.Authorization.Value);
+      bool savedAuthFileExists = _fileOperations.FileExists(authFilePath);
+      if (!savedAuthFileExists)
+      {
+        TestStatus = "[Trakt.NotAuthorized]";
+        IsUserAuthorized = false;
+      }
+      else
+      {
+        string savedAuthorization = _fileOperations.FileReadAllText(authFilePath);
+        TraktAuthorization savedAuthFile = JsonConvert.DeserializeObject<TraktAuthorization>(savedAuthorization);
+        if (savedAuthFile.IsRefreshPossible)
+        {
+          TestStatus = "[Trakt.AlreadyAuthorized]";
+          IsUserAuthorized = true;
+        }
+        else
+        {
+          TestStatus = "[Trakt.SavedAuthIsNotValid]";
+          IsUserAuthorized = false;
+        }
+      }
     }
 
     public void ExitModelContext(NavigationContext oldContext, NavigationContext newContext)
@@ -134,6 +241,27 @@ namespace TraktPluginMP2.Models
     public Guid ModelId
     {
       get { return TRAKT_SETUP_MODEL_ID; }
+    }
+
+    private void SaveTraktAuthorization(TraktAuthorization authorization, string path)
+    {
+      string serializedAuthorization = JsonConvert.SerializeObject(authorization);
+      string authorizationFilePath = Path.Combine(path, FileName.Authorization.Value);
+      _fileOperations.FileWriteAllText(authorizationFilePath, serializedAuthorization, Encoding.UTF8);
+    }
+
+    private void SaveTraktUserSettings(TraktUserSettings traktUserSettings, string path)
+    {
+      string serializedSettings = JsonConvert.SerializeObject(traktUserSettings);
+      string settingsFilePath = Path.Combine(path, FileName.UserSettings.Value);
+      _fileOperations.FileWriteAllText(settingsFilePath, serializedSettings, Encoding.UTF8);
+    }
+
+    private void SaveLastSyncActivities(TraktSyncLastActivities traktSyncLastActivities, string path)
+    {
+      string serializedSyncActivities = JsonConvert.SerializeObject(traktSyncLastActivities, Formatting.Indented);
+      string syncActivitiesFilePath = Path.Combine(path, FileName.LastActivity.Value);
+      _fileOperations.FileWriteAllText(syncActivitiesFilePath, serializedSyncActivities, Encoding.UTF8);
     }
   }
 }

@@ -44,14 +44,14 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       fileOperations.FileExists(Path.Combine(DataPath, FileName.Authorization.Value)).Returns(true);
 
-      TraktHandlerManager traktHandler = new TraktHandlerManager(mediaPortalServices, traktClient, fileOperations);
+      TraktScrobbleHandlerManager traktScrobbleHandler = new TraktScrobbleHandlerManager(mediaPortalServices, traktClient, fileOperations);
 
       // Act
       settings.IsScrobbleEnabled = true;
       settingsChangeWatcher.TraktSettingsChanged += Raise.Event();
 
       // Assert
-      Assert.True(traktHandler.IsActive);
+      Assert.True(traktScrobbleHandler.IsActive);
     }
 
     [Fact]
@@ -75,14 +75,14 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       fileOperations.FileExists(Path.Combine(DataPath, FileName.Authorization.Value)).Returns(true);
 
-      TraktHandlerManager traktHandler = new TraktHandlerManager(mediaPortalServices, traktClient, fileOperations);
+      TraktScrobbleHandlerManager traktScrobbleHandler = new TraktScrobbleHandlerManager(mediaPortalServices, traktClient, fileOperations);
 
       // Act
       settings.IsScrobbleEnabled = true;
       userMessageHandler.UserChangedProxy += Raise.Event();
 
       // Assert
-      Assert.True(traktHandler.IsActive);
+      Assert.True(traktScrobbleHandler.IsActive);
     }
 
 
@@ -102,7 +102,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       fileOperations.FileExists(Path.Combine(DataPath, FileName.Authorization.Value)).Returns(true);
 
-      TraktHandlerManager traktHandler = new TraktHandlerManager(mediaPortalServices, traktClient, fileOperations);
+      TraktScrobbleHandlerManager traktScrobbleHandler = new TraktScrobbleHandlerManager(mediaPortalServices, traktClient, fileOperations);
       TraktScrobbleStartedNotification expectedNotification = (TraktScrobbleStartedNotification)notification;
 
       // Act
@@ -134,7 +134,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       fileOperations.FileExists(Path.Combine(DataPath, FileName.Authorization.Value)).Returns(true);
 
-      TraktHandlerManager traktHandler = new TraktHandlerManager(mediaPortalServices, traktClient, fileOperations);
+      TraktScrobbleHandlerManager traktScrobbleHandler = new TraktScrobbleHandlerManager(mediaPortalServices, traktClient, fileOperations);
       TraktScrobbleStoppedNotification expectedNotification = (TraktScrobbleStoppedNotification)notification;
 
       // Act

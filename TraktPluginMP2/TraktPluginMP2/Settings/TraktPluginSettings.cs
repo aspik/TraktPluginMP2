@@ -7,6 +7,9 @@ namespace TraktPluginMP2.Settings
     [Setting(SettingScope.User, DefaultValue = false)]
     public bool IsScrobbleEnabled { get; set; }
 
+    [Setting(SettingScope.User, DefaultValue = false)]
+    public bool IsAutomaticLibrarySyncEnabled { get; set; }
+
     [Setting(SettingScope.User, DefaultValue = true)]
     public bool ShowScrobbleStartedNotifications { get; set; }
 

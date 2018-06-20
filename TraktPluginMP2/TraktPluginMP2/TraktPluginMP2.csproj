@@ -57,15 +57,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\MediaLibraryNotConnectedException.cs" />
     <Compile Include="FileName.cs" />
-    <Compile Include="Handlers\TraktHandler.cs" />
-    <Compile Include="Handlers\TraktHandlerContainer.cs" />
-    <Compile Include="Handlers\TraktHandlerManager.cs" />
+    <Compile Include="Handlers\TraktScrobbleHandler.cs" />
+    <Compile Include="Handlers\TraktScrobbleHandlerContainer.cs" />
+    <Compile Include="Handlers\TraktScrobbleHandlerManager.cs" />
+    <Compile Include="Handlers\TraktSyncHandler.cs" />
+    <Compile Include="Handlers\TraktSyncHandlerContainer.cs" />
+    <Compile Include="Handlers\TraktSyncHandlerManager.cs" />
     <Compile Include="Models\ITraktNotificationModel.cs" />
     <Compile Include="Models\TraktNotificationModel.cs" />
     <Compile Include="Models\TraktSetupModel.cs" />
-    <Compile Include="Models\TraktSetupModelContainer.cs" />
-    <Compile Include="Models\TraktSetupModelManager.cs" />
     <Compile Include="Notifications\ITraktNotification.cs" />
     <Compile Include="Notifications\TraktScrobbleNotificationBase.cs" />
     <Compile Include="Notifications\TraktScrobbleStartedNotification.cs" />
@@ -75,11 +77,13 @@
     <Compile Include="Services\FileOperations.cs" />
     <Compile Include="Services\IAsynchronousMessageQueue.cs" />
     <Compile Include="Services\IFileOperations.cs" />
+    <Compile Include="Services\ILibrarySynchronization.cs" />
     <Compile Include="Services\IMediaPortalServices.cs" />
     <Compile Include="Services\ITraktCache.cs" />
     <Compile Include="Services\ITraktClient.cs" />
     <Compile Include="Services\ITraktSettingsChangeWatcher.cs" />
     <Compile Include="Services\IUserMessageHandler.cs" />
+    <Compile Include="Services\LibrarySynchronization.cs" />
     <Compile Include="Services\MediaPortalServices.cs" />
     <Compile Include="Services\TraktCache.cs" />
     <Compile Include="Services\TraktClientProxy.cs" />
@@ -88,6 +92,7 @@
     <Compile Include="Settings\Configuration\ScrobbleStartedNotificationSetting.cs" />
     <Compile Include="Settings\Configuration\ScrobbleStoppedNotificationSetting.cs" />
     <Compile Include="Settings\Configuration\TraktSettingsConfiguration.cs" />
+    <Compile Include="Settings\IsAutomaticLibrarySyncEnabled.cs" />
     <Compile Include="Settings\IsScrobbleEnabled.cs" />
     <Compile Include="Settings\TraktPluginSettings.cs" />
     <Compile Include="Structures\Episode.cs" />

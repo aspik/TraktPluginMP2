@@ -22,7 +22,7 @@ using TraktPluginMP2.Utilities;
 
 namespace TraktPluginMP2.Handlers
 {
-  public class TraktHandlerManager : IDisposable
+  public class TraktScrobbleHandlerManager : IDisposable
   {
     private readonly IMediaPortalServices _mediaPortalServices;
     private readonly ITraktClient _traktClient;
@@ -34,7 +34,7 @@ namespace TraktPluginMP2.Handlers
     private TraktEpisode _traktEpisode;
     private TraktShow _traktShow;
 
-    public TraktHandlerManager(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, IFileOperations fileOperations)
+    public TraktScrobbleHandlerManager(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, IFileOperations fileOperations)
     {
       _mediaPortalServices = mediaPortalServices;
       _traktClient = traktClient;
@@ -61,13 +61,13 @@ namespace TraktPluginMP2.Handlers
       {
         SubscribeToMessages();
         IsActive = true;
-        _mediaPortalServices.GetLogger().Info("Trakt: enabled trakt handler.");
+        _mediaPortalServices.GetLogger().Info("Trakt: enabled trakt scrobble handler.");
       }
       else
       {
         UnsubscribeFromMessages();
         IsActive = false;
-        _mediaPortalServices.GetLogger().Info("Trakt: disabled trakt handler.");
+        _mediaPortalServices.GetLogger().Info("Trakt: disabled trakt scrobble handler.");
       }
     }
 

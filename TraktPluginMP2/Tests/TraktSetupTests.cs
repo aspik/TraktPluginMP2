@@ -40,10 +40,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetWatchedMovies().Returns(traktMovies);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncMoviesResult result = traktSetup.SyncMovies();
+      TraktSyncMoviesResult result = librarySynchronization.SyncMovies();
 
       // Assert
       Assert.Equal(expectedMoviesCount, result.AddedToTraktWatchedHistory);
@@ -66,10 +66,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetCollectedMovies().Returns(traktMovies);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncMoviesResult result = traktSetup.SyncMovies();
+      TraktSyncMoviesResult result = librarySynchronization.SyncMovies();
 
       // Assert
       Assert.Equal(expectedMoviesCount, result.AddedToTraktCollection);
@@ -90,10 +90,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetUnWatchedMovies().Returns(traktMovies);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncMoviesResult result = traktSetup.SyncMovies();
+      TraktSyncMoviesResult result = librarySynchronization.SyncMovies();
 
       // Assert
       Assert.Equal(expectedMoviesCount, result.MarkedAsUnWatchedInLibrary);
@@ -114,10 +114,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetWatchedMovies().Returns(traktMovies);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncMoviesResult result = traktSetup.SyncMovies();
+      TraktSyncMoviesResult result = librarySynchronization.SyncMovies();
 
       // Assert
       Assert.Equal(expectedMoviesCount, result.MarkedAsWatchedInLibrary);
@@ -139,10 +139,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetCollectedEpisodes().Returns(traktEpisodes);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncEpisodesResult result = traktSetup.SyncSeries();
+      TraktSyncEpisodesResult result = librarySynchronization.SyncSeries();
 
       // Assert
       Assert.Equal(expectedEpisodesCount, result.AddedToTraktCollection);
@@ -164,10 +164,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetWatchedEpisodes().Returns(traktEpisodes);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncEpisodesResult result = traktSetup.SyncSeries();
+      TraktSyncEpisodesResult result = librarySynchronization.SyncSeries();
 
       // Assert
       Assert.Equal(expectedEpisodesCount, result.AddedToTraktWatchedHistory);
@@ -188,10 +188,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetUnWatchedEpisodes().Returns(traktEpisodes);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncEpisodesResult result = traktSetup.SyncSeries();
+      TraktSyncEpisodesResult result = librarySynchronization.SyncSeries();
 
       // Assert
       Assert.Equal(expectedEpisodessCount, result.MarkedAsUnWatchedInLibrary);
@@ -212,10 +212,10 @@ namespace Tests
       ITraktCache traktCache = Substitute.For<ITraktCache>();
       traktCache.GetWatchedEpisodes().Returns(traktEpisodes);
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
-      TraktSetupModelManager traktSetup = new TraktSetupModelManager(mediaPortalServices, traktClient, traktCache, fileOperations);
+      ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
       // Act
-      TraktSyncEpisodesResult result = traktSetup.SyncSeries();
+      TraktSyncEpisodesResult result = librarySynchronization.SyncSeries();
 
       // Assert
       Assert.Equal(expectedEpisodesCount, result.MarkedAsWatchedInLibrary);

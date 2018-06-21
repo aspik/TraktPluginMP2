@@ -135,7 +135,7 @@ namespace TraktPluginMP2.Handlers
       }
       catch (ArgumentNullException ex)
       {
-        _mediaPortalServices.GetLogger().Error("Trakt: exception while starting scrobble: " + ex);
+        _mediaPortalServices.GetLogger().Error("Trakt: exception occurred while starting scrobble: " + ex);
       }
       catch (Exception ex)
       {
@@ -145,7 +145,7 @@ namespace TraktPluginMP2.Handlers
         {
           ShowNotification(new TraktScrobbleStartedNotification(ex.Message, false), TimeSpan.FromSeconds(5));
         }
-        _mediaPortalServices.GetLogger().Error("Trakt: exception while starting scrobble: " + ex);
+        _mediaPortalServices.GetLogger().Error("Trakt: exception occurred while starting scrobble: " + ex);
         _traktEpisode = null;
         _traktMovie = null;
         _duration = TimeSpan.Zero;

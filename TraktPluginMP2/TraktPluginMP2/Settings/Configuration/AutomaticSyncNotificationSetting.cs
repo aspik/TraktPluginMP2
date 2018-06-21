@@ -3,22 +3,23 @@ using MediaPortal.Common.Localization;
 
 namespace TraktPluginMP2.Settings.Configuration
 {
-  public class ScrobbleStartedNotificationSetting : SingleSelectionList
+  public class AutomaticSyncNotificationSetting : SingleSelectionList
   {
-    public ScrobbleStartedNotificationSetting()
+    public AutomaticSyncNotificationSetting()
     {
       _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.AlwaysShowNotification]"));
       _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.ShowNotificationOnFailure]"));
       _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.DisableNotifications]"));
     }
+
     public override void Load()
     {
       TraktPluginSettings settings = SettingsManager.Load<TraktPluginSettings>();
-      if (settings.ShowScrobbleStartedNotifications && settings.ShowScrobbleStartedNotificationsOnFailure)
+      if (settings.ShowAutomaticSyncNotifications && settings.ShowAutomaticSyncNotificationsOnFailure)
       {
         Selected = 0;
       }
-      else if (!settings.ShowScrobbleStartedNotifications && settings.ShowScrobbleStartedNotificationsOnFailure)
+      else if (!settings.ShowAutomaticSyncNotifications && settings.ShowAutomaticSyncNotificationsOnFailure)
       {
         Selected = 1;
       }
@@ -35,18 +36,18 @@ namespace TraktPluginMP2.Settings.Configuration
 
       if (Selected == 0)
       {
-        settings.ShowScrobbleStartedNotifications = true;
-        settings.ShowScrobbleStartedNotificationsOnFailure = true;
+        settings.ShowAutomaticSyncNotifications = true;
+        settings.ShowAutomaticSyncNotificationsOnFailure = true;
       }
       else if (Selected == 1)
       {
-        settings.ShowScrobbleStartedNotificationsOnFailure = true;
-        settings.ShowScrobbleStartedNotifications = false;
+        settings.ShowAutomaticSyncNotificationsOnFailure = true;
+        settings.ShowAutomaticSyncNotifications = false;
       }
       else
       {
-        settings.ShowScrobbleStartedNotificationsOnFailure = false;
-        settings.ShowScrobbleStartedNotifications = false;
+        settings.ShowAutomaticSyncNotificationsOnFailure = false;
+        settings.ShowAutomaticSyncNotifications = false;
       }
       SettingsManager.Save(settings);
     }

@@ -267,6 +267,7 @@ namespace TraktPluginMP2.Services
 
       if (localWatchedEpisodes.Any())
       {
+        syncEpisodesResult.WatchedInLibrary = localWatchedEpisodes.Count;
         _mediaPortalServices.GetLogger().Info("Trakt: found {0} episodes watched in library", localWatchedEpisodes.Count);
       }
 

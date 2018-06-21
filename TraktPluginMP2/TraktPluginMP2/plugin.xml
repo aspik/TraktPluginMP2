@@ -94,6 +94,11 @@
       Text="[Settings.Plugins.Trakt.ScrobbleStopNotifications]"
       HelpText="[Settings.Plugins.Trakt.ScrobbleStopNotifications.Help]"
       ClassName="TraktPluginMP2.Settings.Configuration.ScrobbleStoppedNotificationSetting"/>
+    <ConfigSetting
+      Id="AutoSyncNotifications"
+      Text="[Settings.Plugins.Trakt.AutoSyncNotifications]"
+      HelpText="[Settings.Plugins.Trakt.AutoSyncNotifications.Help]"
+      ClassName="TraktPluginMP2.Settings.Configuration.AutomaticSyncNotificationSetting"/>
   </Register>
   
 </Plugin>

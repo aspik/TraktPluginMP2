@@ -21,5 +21,11 @@ namespace TraktPluginMP2.Settings
 
     [Setting(SettingScope.User, DefaultValue = true)]
     public bool ShowScrobbleStoppedNotificationsOnFailure { get; set; }
+
+    [Setting(SettingScope.User, DefaultValue = true)]
+    public bool ShowAutomaticSyncNotifications { get; set; }
+
+    [Setting(SettingScope.User, DefaultValue = true)]
+    public bool ShowAutomaticSyncNotificationsOnFailure { get; set; }
   }
 }

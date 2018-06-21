@@ -7,9 +7,9 @@ namespace TraktPluginMP2.Settings.Configuration
   {
     public ScrobbleStoppedNotificationSetting()
     {
-      _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.ShowScrobbleNotificationAlways]"));
-      _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.ShowScrobbleNotificationOnFailure]"));
-      _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.DisableScrobbleNotifications]"));
+      _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.AlwaysShowNotification]"));
+      _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.ShowNotificationOnFailure]"));
+      _items.Add(LocalizationHelper.CreateResourceString("[Settings.Plugins.Trakt.DisableNotifications]"));
     }
     public override void Load()
     {

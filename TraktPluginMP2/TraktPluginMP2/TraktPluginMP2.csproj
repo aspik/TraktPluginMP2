@@ -72,6 +72,7 @@
     <Compile Include="Notifications\TraktScrobbleNotificationBase.cs" />
     <Compile Include="Notifications\TraktScrobbleStartedNotification.cs" />
     <Compile Include="Notifications\TraktScrobbleStoppedNotification.cs" />
+    <Compile Include="Notifications\TraktSyncLibraryFinishedNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AsynchronousMessageQueueProxy.cs" />
     <Compile Include="Services\FileOperations.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Services\TraktClientProxy.cs" />
     <Compile Include="Services\TraktSettingsChangeWatcher.cs" />
     <Compile Include="Services\UserMessageHandlerProxy.cs" />
+    <Compile Include="Settings\Configuration\AutomaticSyncNotificationSetting.cs" />
     <Compile Include="Settings\Configuration\ScrobbleStartedNotificationSetting.cs" />
     <Compile Include="Settings\Configuration\ScrobbleStoppedNotificationSetting.cs" />
     <Compile Include="Settings\Configuration\TraktSettingsConfiguration.cs" />
@@ -108,7 +110,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Language\strings_en.xml" />
+    <Content Include="Language\strings_en.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="plugin.xml" />
     <Content Include="Skin\default\Images\qr.png" />
     <Content Include="Skin\default\Images\trakt.png" />
@@ -125,6 +129,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Skin\default\screens\TraktNotificationScrobble.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Skin\default\superlayers\TraktSyncNotification.xaml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Skin\default\superlayers\TraktScrobbleStartedNotification.xaml" />

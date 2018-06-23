@@ -2,23 +2,37 @@
 {
   public abstract class TraktScrobbleNotificationBase : ITraktNotification
   {
-    protected string _title;
+    protected string _message;
     protected bool _isSuccess;
+    protected int? _progress;
+    protected string _actionType;
 
-    public TraktScrobbleNotificationBase(string title, bool isSuccess)
+    protected TraktScrobbleNotificationBase(string message, bool isSuccess, int? progress, string actionType)
     {
-      _title = title;
+      _message = message;
       _isSuccess = isSuccess;
+      _progress = progress;
+      _actionType = actionType;
     }
 
-    public string Title
+    public string Message
     {
-      get { return _title; }
+      get { return _message; }
     }
 
     public bool IsSuccess
     {
       get { return _isSuccess; }
+    }
+
+    public int? Progress
+    {
+      get { return _progress; }
+    }
+
+    public string ActionType
+    {
+      get { return _actionType; }
     }
 
     public abstract string SuperLayerScreenName { get; }

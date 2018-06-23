@@ -104,10 +104,10 @@
     <Compile Include="TestData\Cache\UnWatchedMoviesTestData.cs" />
     <Compile Include="TestData\Cache\WatchedEpisodesTestData.cs" />
     <Compile Include="TestData\Cache\WatchedMoviesTestData.cs" />
-    <Compile Include="TestData\Handler\StartScrobbleMovieTestData.cs" />
-    <Compile Include="TestData\Handler\StartScrobbleSeriesTestData.cs" />
-    <Compile Include="TestData\Handler\StopScrobbleMovieTestData.cs" />
-    <Compile Include="TestData\Handler\StopScrobbleSeriesTestData.cs" />
+    <Compile Include="TestData\Handlers\StartScrobbleMovieTestData.cs" />
+    <Compile Include="TestData\Handlers\StartScrobbleSeriesTestData.cs" />
+    <Compile Include="TestData\Handlers\StopScrobbleMovieTestData.cs" />
+    <Compile Include="TestData\Handlers\StopScrobbleSeriesTestData.cs" />
     <Compile Include="TestData\Setup\CollectedEpisodesTestData.cs" />
     <Compile Include="TestData\Setup\CollectedMoviesTestData.cs" />
     <Compile Include="TestData\Setup\MockedDatabaseEpisode.cs" />
@@ -120,8 +120,10 @@
     <Compile Include="TestData\Setup\WatchedMoviesTestData.cs" />
     <Compile Include="TestUtility.cs" />
     <Compile Include="TraktCacheTests.cs" />
-    <Compile Include="TraktHandlerTests.cs" />
-    <Compile Include="TraktSetupTests.cs" />
+    <Compile Include="TraktScrobbleHandlerTests.cs" />
+    <Compile Include="TraktLibrarySyncTests.cs" />
+    <Compile Include="TraktSetupModelTests.cs" />
+    <Compile Include="TraktSyncHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

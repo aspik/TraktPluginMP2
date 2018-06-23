@@ -19,5 +19,15 @@ namespace TraktPluginMP2.Services
     {
       File.WriteAllText(path, contents, encoding);
     }
+
+    public bool DirectoryExists(string path)
+    {
+      return Directory.Exists(path);
+    }
+
+    public DirectoryInfo CreateDirectory(string path)
+    {
+      return Directory.CreateDirectory(path);
+    }
   }
 }

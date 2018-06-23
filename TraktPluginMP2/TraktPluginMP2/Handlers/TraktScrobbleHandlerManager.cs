@@ -143,7 +143,7 @@ namespace TraktPluginMP2.Handlers
         bool startNotificationsOnFailureEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowScrobbleStartedNotificationsOnFailure;
         if (startNotificationsEnabled || startNotificationsOnFailureEnabled)
         {
-          ShowNotification(new TraktScrobbleStartedNotification(ex.Message, false), TimeSpan.FromSeconds(5));
+          ShowNotification(new TraktScrobbleStartedNotification(ex.Message, false, 0, "Unspecified"), TimeSpan.FromSeconds(5));
         }
         _mediaPortalServices.GetLogger().Error("Trakt: exception occurred while starting scrobble: " + ex);
         _traktEpisode = null;
@@ -167,11 +167,17 @@ namespace TraktPluginMP2.Handlers
       float progress = GetCurrentProgress(pmc);
       TraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StartScrobbleEpisode(_traktEpisode, _traktShow, progress);
       string title = postEpisodeResponse.Episode.Title;
+      int? traktProgress = null;
+      if (postEpisodeResponse.Progress != null)
+      {
+        traktProgress = (int) postEpisodeResponse.Progress;
+      }
+      string actionType = postEpisodeResponse.Action.DisplayName;
 
       bool startNotificationsEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowScrobbleStartedNotifications;
       if (startNotificationsEnabled)
       {
-        ShowNotification(new TraktScrobbleStartedNotification(title, true), TimeSpan.FromSeconds(5));
+        ShowNotification(new TraktScrobbleStartedNotification(title, true, traktProgress, actionType), TimeSpan.FromSeconds(5));
       }
 
       _duration = pmc.Duration;
@@ -253,11 +259,17 @@ namespace TraktPluginMP2.Handlers
       float progress = GetCurrentProgress(pmc);
       TraktMovieScrobblePostResponse postMovieResponse = _traktClient.StartScrobbleMovie(_traktMovie, progress);
       string title = postMovieResponse.Movie.Title;
+      int? traktProgress = null;
+      if (postMovieResponse.Progress != null)
+      {
+        traktProgress = (int)postMovieResponse.Progress;
+      }
+      string actionType = postMovieResponse.Action.DisplayName;
 
       bool startNotificationsEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowScrobbleStartedNotifications;
       if (startNotificationsEnabled)
       {
-        ShowNotification(new TraktScrobbleStartedNotification(title, true), TimeSpan.FromSeconds(5));
+        ShowNotification(new TraktScrobbleStartedNotification(title, true, traktProgress, actionType), TimeSpan.FromSeconds(5));
       }
 
       _duration = pmc.Duration;
@@ -300,11 +312,17 @@ namespace TraktPluginMP2.Handlers
           float progress = GetSavedProgress();
           TraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StopScrobbleEpisode(_traktEpisode, _traktShow, progress);
           string title = postEpisodeResponse.Episode.Title;
+          int? traktProgress = null;
+          if (postEpisodeResponse.Progress != null)
+          {
+            traktProgress = (int)postEpisodeResponse.Progress;
+          }
+          string actionType = postEpisodeResponse.Action.DisplayName;
 
           bool stopNotificationsEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowScrobbleStoppedNotifications;
           if (stopNotificationsEnabled)
           {
-            ShowNotification(new TraktScrobbleStoppedNotification(title, true), TimeSpan.FromSeconds(5));
+            ShowNotification(new TraktScrobbleStoppedNotification(title, true, traktProgress, actionType), TimeSpan.FromSeconds(5));
           }
 
           _traktEpisode = null;
@@ -318,11 +336,17 @@ namespace TraktPluginMP2.Handlers
           float progress = GetSavedProgress();
           TraktMovieScrobblePostResponse postMovieResponse = _traktClient.StopScrobbleMovie(_traktMovie, progress);
           string title = postMovieResponse.Movie.Title;
+          int? traktProgress = null;
+          if (postMovieResponse.Progress != null)
+          {
+            traktProgress = (int)postMovieResponse.Progress;
+          }
+          string actionType = postMovieResponse.Action.DisplayName;
 
           bool stopNotificationsEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowScrobbleStoppedNotifications;
           if (stopNotificationsEnabled)
           {
-            ShowNotification(new TraktScrobbleStoppedNotification(title, true), TimeSpan.FromSeconds(5));
+            ShowNotification(new TraktScrobbleStoppedNotification(title, true, traktProgress, actionType), TimeSpan.FromSeconds(5));
           }
           
           _traktMovie = null;
@@ -335,7 +359,7 @@ namespace TraktPluginMP2.Handlers
         bool stopNotificationsOnFailureEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowScrobbleStoppedNotificationsOnFailure;
         if (stopNotificationsEnabled || stopNotificationsOnFailureEnabled)
         {
-          ShowNotification(new TraktScrobbleStoppedNotification(ex.Message, false), TimeSpan.FromSeconds(4));
+          ShowNotification(new TraktScrobbleStoppedNotification(ex.Message, false, null, "Unspecified"), TimeSpan.FromSeconds(4));
         }
         _mediaPortalServices.GetLogger().Error("Trakt: exception while stopping scrobble: " + ex);
       }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NSubstitute;
 using Tests.TestData.Setup;
 using TraktApiSharp.Authentication;
+using TraktApiSharp.Enums;
 using TraktApiSharp.Objects.Get.Shows;
 using TraktApiSharp.Objects.Get.Shows.Episodes;
 using TraktApiSharp.Objects.Post.Scrobbles.Responses;
@@ -10,7 +11,7 @@ using TraktPluginMP2.Notifications;
 using TraktPluginMP2.Services;
 using TraktPluginMP2.Settings;
 
-namespace Tests.TestData.Handler
+namespace Tests.TestData.Handlers
 {
   public class StartScrobbleSeriesTestData : IEnumerable<object[]>
   {
@@ -26,7 +27,7 @@ namespace Tests.TestData.Handler
         },
         new MockedDatabaseEpisode("289590", 2, new List<int> {6}, 1).Episode,
         GetMockedTraktClientWithValidAuthorization(),
-        new TraktScrobbleStartedNotification(title, true)
+        new TraktScrobbleStartedNotification(title, true, 10, "Start")
       };
     }
 
@@ -52,7 +53,9 @@ namespace Tests.TestData.Handler
             Number = 2,
             Title = "Title_1",
             SeasonNumber = 2
-          }
+          },
+          Action = TraktScrobbleActionType.Start,
+          Progress = 10
         });
 
       return traktClient;

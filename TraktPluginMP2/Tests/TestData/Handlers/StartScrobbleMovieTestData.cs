@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using NSubstitute;
 using Tests.TestData.Setup;
 using TraktApiSharp.Authentication;
+using TraktApiSharp.Enums;
 using TraktApiSharp.Objects.Get.Movies;
 using TraktApiSharp.Objects.Post.Scrobbles.Responses;
 using TraktPluginMP2.Notifications;
 using TraktPluginMP2.Services;
 using TraktPluginMP2.Settings;
 
-namespace Tests.TestData.Handler
+namespace Tests.TestData.Handlers
 {
   public class StartScrobbleMovieTestData : IEnumerable<object[]>
   {
@@ -25,7 +26,7 @@ namespace Tests.TestData.Handler
         },
         new MockedDatabaseMovie("tt12345", "67890", title, 2012, 0).Movie,
         GetMockedTraktClientWithValidAuthorization(),
-        new TraktScrobbleStartedNotification(title, true)
+        new TraktScrobbleStartedNotification(title, true, 10, "Start")
       };
     }
 
@@ -50,7 +51,9 @@ namespace Tests.TestData.Handler
             Ids = new TraktMovieIds { Imdb = "tt1431045", Tmdb = 67890 },
             Title = "Movie1",
             Year = 2016,
-          }
+          },
+          Action = TraktScrobbleActionType.Start,
+          Progress = 10
         });
 
       return traktClient;

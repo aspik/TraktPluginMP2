@@ -45,4 +45,7 @@
   <string name="Trakt.ScrobbleStartedHeader">Scrobble started</string>
   <string name="Trakt.ScrobbleStoppedHeader">Scrobble stopped</string>
 
+  <string name="Trakt.SyncLibrarySuccessHeader">Finished syncing library with Trakt</string>
+  <string name="Trakt.SyncLibraryFailureHeader">Syncing library with Trakt failed</string>
+
 </resources>

@@ -42,8 +42,8 @@ Parameters which have to be accessible by a DynamicResource lookup:
 
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
 
-          <Label x:Name="Title" Color="{ThemeResource OSDFontColor}" FontSize="{ThemeResource OSDFontSize}"
-                 Content="{Binding Path=Title}" />
+          <Label x:Name="Message" Color="{ThemeResource OSDFontColor}" FontSize="{ThemeResource OSDFontSize}"
+                 Content="{Binding Path=Message}" />
 
         </StackPanel>
 

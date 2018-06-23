@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 namespace TraktPluginMP2.Services
 {
@@ -9,5 +10,9 @@ namespace TraktPluginMP2.Services
     string FileReadAllText(string file);
 
     void FileWriteAllText(string path, string contents, Encoding encoding);
+
+    bool DirectoryExists(string path);
+
+    DirectoryInfo CreateDirectory(string path);
   }
 }

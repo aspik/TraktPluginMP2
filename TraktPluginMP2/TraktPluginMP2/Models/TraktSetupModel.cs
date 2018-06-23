@@ -121,9 +121,9 @@ namespace TraktPluginMP2.Models
         TraktSyncLastActivities traktSyncLastActivities = _traktClient.GetLastActivities();
 
         string traktUserHomePath = _mediaPortalServices.GetTraktUserHomePath();
-        if (!Directory.Exists(traktUserHomePath))
+        if (!_fileOperations.DirectoryExists(traktUserHomePath))
         {
-          Directory.CreateDirectory(traktUserHomePath);
+          _fileOperations.CreateDirectory(traktUserHomePath);
         }
 
         SaveTraktAuthorization(authorization, traktUserHomePath);
@@ -151,9 +151,9 @@ namespace TraktPluginMP2.Models
           IThreadPool threadPool = _mediaPortalServices.GetThreadPool();
           threadPool.Add(() =>
           {
-            TestStatus = "[Trakt.SyncSeries]";
-            _librarySynchronization.SyncMovies();
             TestStatus = "[Trakt.SyncMovies]";
+            _librarySynchronization.SyncMovies();
+            TestStatus = "[Trakt.SyncSeries]";
             _librarySynchronization.SyncSeries();
             IsSynchronizing = false;
             TestStatus = "[Trakt.SyncFinished]";

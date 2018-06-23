@@ -24,6 +24,8 @@ namespace TraktPluginMP2.Handlers
       ConfigureHandler();
     }
 
+    public bool IsActive { get; private set; }
+
     private void ConfigureHandler(object sender, EventArgs e)
     {
       ConfigureHandler();
@@ -38,11 +40,13 @@ namespace TraktPluginMP2.Handlers
       if (isUserAuthorized && isAutomaticSyncEnabled)
       {
         SubscribeToMessages();
+        IsActive = true;
         _mediaPortalServices.GetLogger().Info("Trakt: enabled trakt sync handler.");
       }
       else
       {
         UnsubscribeFromMessages();
+        IsActive = false;
         _mediaPortalServices.GetLogger().Info("Trakt: disabled trakt sync handler.");
       }
     }
@@ -74,7 +78,7 @@ namespace TraktPluginMP2.Handlers
             bool syncNotificationsEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowAutomaticSyncNotifications;
             if (syncNotificationsEnabled)
             {
-              ShowNotification(new TraktSyncLibraryFinishedNotification("Success message", true), TimeSpan.FromSeconds(5));
+              ShowNotification(new TraktSyncLibrarySuccessNotification(), TimeSpan.FromSeconds(5));
             }
           }
           catch (Exception ex)
@@ -85,7 +89,7 @@ namespace TraktPluginMP2.Handlers
             bool syncNotificationsOnFailureEnabled = _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.ShowAutomaticSyncNotificationsOnFailure;
             if (syncNotificationsEnabled || syncNotificationsOnFailureEnabled)
             {
-              ShowNotification(new TraktSyncLibraryFinishedNotification(ex.Message, false), TimeSpan.FromSeconds(5));
+              ShowNotification(new TraktSyncLibraryFailureNotification(ex.Message), TimeSpan.FromSeconds(5));
             }
           }
         }

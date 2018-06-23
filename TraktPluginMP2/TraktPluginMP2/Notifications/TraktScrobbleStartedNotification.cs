@@ -2,9 +2,9 @@
 {
   public class TraktScrobbleStartedNotification : TraktScrobbleNotificationBase
   {
-    const string SUPER_LAYER_SCREEN = "TraktScrobbleStartedNotification";
+    private const string SUPER_LAYER_SCREEN = "TraktScrobbleStartedNotification";
 
-    public TraktScrobbleStartedNotification(string title, bool isSuccess) : base(title, isSuccess)
+    public TraktScrobbleStartedNotification(string message, bool isSuccess, int? progress, string actionType) : base(message, isSuccess, progress, actionType)
     {
     }
 

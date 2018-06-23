@@ -8,7 +8,7 @@ using MediaPortal.Common.Settings;
 using MediaPortal.Common.SystemCommunication;
 using MediaPortal.UI.Presentation.Players;
 using NSubstitute;
-using Tests.TestData.Handler;
+using Tests.TestData.Handlers;
 using TraktPluginMP2;
 using TraktPluginMP2.Handlers;
 using TraktPluginMP2.Notifications;
@@ -18,12 +18,12 @@ using Xunit;
 
 namespace Tests
 {
-  public class TraktHandlerTests
+  public class TraktScrobbleHandlerTests
   {
     private const string DataPath = @"C:\FakeTraktUserHomePath\";
 
     [Fact]
-    public void EnableTraktHandlerWhenSettingsChanged()
+    public void EnableTraktScrobbleHandlerWhenSettingsChanged()
     {
       // Arrange
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
@@ -55,7 +55,7 @@ namespace Tests
     }
 
     [Fact]
-    public void EnableTraktHandlerWhenUserChanged()
+    public void EnableTraktScrobbleHandlerWhenUserChanged()
     {
       // Arrange
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
@@ -113,7 +113,9 @@ namespace Tests
       // Assert
       mediaPortalServices.GetTraktNotificationModel().Received()
         .ShowNotification(Arg.Is<TraktScrobbleStartedNotification>(x => x.IsSuccess == expectedNotification.IsSuccess && 
-                                                                        x.Title == expectedNotification.Title && 
+                                                                        x.Message == expectedNotification.Message && 
+                                                                        x.ActionType == expectedNotification.ActionType &&
+                                                                        x.Progress == expectedNotification.Progress &&
                                                                         x.SuperLayerScreenName == expectedNotification.SuperLayerScreenName), 
                                                                         Arg.Any<TimeSpan>());
     }
@@ -149,7 +151,9 @@ namespace Tests
       // Assert
       mediaPortalServices.GetTraktNotificationModel().Received()
         .ShowNotification(Arg.Is<TraktScrobbleStoppedNotification>(x => x.IsSuccess == expectedNotification.IsSuccess &&
-                                                                        x.Title == expectedNotification.Title &&
+                                                                        x.Message == expectedNotification.Message &&
+                                                                        x.ActionType == expectedNotification.ActionType &&
+                                                                        x.Progress == expectedNotification.Progress &&
                                                                         x.SuperLayerScreenName == expectedNotification.SuperLayerScreenName),
                                                                         Arg.Any<TimeSpan>());
     }
@@ -197,8 +201,7 @@ namespace Tests
       SystemMessage state = new SystemMessage(msgType)
       {
         ChannelName = "PlayerManager",
-        MessageData = { ["PlayerSlotController"] = psc
-        }
+        MessageData = { ["PlayerSlotController"] = psc }
       };
       return state;
     }

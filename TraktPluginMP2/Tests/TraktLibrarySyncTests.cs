@@ -22,7 +22,7 @@ using Xunit;
 
 namespace Tests
 {
-  public class TraktSetupTests
+  public class TraktLibrarySyncTests
   {
     [Theory]
     [ClassData(typeof(WatchedMoviesTestData))]

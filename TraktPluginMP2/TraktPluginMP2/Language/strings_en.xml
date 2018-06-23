@@ -24,7 +24,7 @@
   <string name="Settings.Plugins.Trakt.IsScrobbleEnabled">Enable scrobble</string>
   <string name="Settings.Plugins.Trakt.IsScrobbleEnabled.Help">Enables scrobble to Trakt</string>
 
-  <string name="Settings.Plugins.Trakt.IsAutomaticLibrarySyncEnabled">Enable automatic sync with trakt</string>
+  <string name="Settings.Plugins.Trakt.IsAutomaticLibrarySyncEnabled">Enable automatic library sync with trakt</string>
   <string name="Settings.Plugins.Trakt.IsAutomaticLibrarySyncEnabled.Help">Enables automatic sync with trakt after each share import.</string>
 
   <string name="Settings.Plugins.Trakt.ScrobbleStartNotifications">Scrobble start notifications</string>

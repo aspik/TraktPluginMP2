@@ -25,11 +25,33 @@ Parameters which have to be accessible by a DynamicResource lookup:
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Source="screens\TraktNotificationBare.xaml">
   <Include.Resources>
+
+    <Style x:Key="TraktProgressBarStyle" TargetType="{x:Type ProgressBar}">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type ProgressBar}">
+            <Grid x:Name="ProgressBarGrid" UIElement.MouseClick="{CommandStencil RelativeSource={RelativeSource TemplatedParent}, Path=OnMouseClick}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <Rectangle x:Name="ProgressBarTrack" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                         RadiusX="6" RadiusY="6" StrokeThickness="0" Fill="{ThemeResource TraktBarBackgroundColor}" Opacity="0.7"/>
+              <Rectangle x:Name="ProgressBarIndicator" Width="{TemplateBinding PartIndicatorWidth}" HorizontalAlignment="Left" StrokeThickness="0"
+                         VerticalAlignment="Stretch" RadiusX="6" RadiusY="6" Fill="{ThemeResource TraktBarFillColor}"/>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    
     <ControlTemplate x:Key="Notification_Template">
 
       <Grid>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="190" />
+          <ColumnDefinition Width="90" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -39,12 +61,14 @@ Parameters which have to be accessible by a DynamicResource lookup:
 
         <Label x:Name="NotificationHeader" Grid.ColumnSpan="2" Color="{ThemeResource OSDFontColor}" FontSize="{ThemeResource OSDHeaderFontSize}"
                Content="{DynamicResource Header_Text}" Margin="5,5,5,0"/>
-
+        
+        <Image Grid.Row="1" Source="trakt.png" Height="70" Stretch="Uniform" HorizontalAlignment="Left" Margin="5"/>
+        
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
-
           <Label x:Name="Message" Color="{ThemeResource OSDFontColor}" FontSize="{ThemeResource OSDFontSize}"
-                 Content="{Binding Path=Message}" />
-
+                 Content="{Binding Path=Message}" HorizontalAlignment="Left"/>
+          <ProgressBar Height="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,20,0,10"
+                       Value="{Binding Path=Progress}" Style="{ThemeResource TraktProgressBarStyle}"/>
         </StackPanel>
 
       </Grid>

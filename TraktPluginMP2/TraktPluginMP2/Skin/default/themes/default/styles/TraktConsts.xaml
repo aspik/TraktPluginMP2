@@ -5,12 +5,15 @@
 >
 
   <!-- QR image dimensions -->
-  <ResourceWrapper x:Key="QRWidth720" Resource="240" />
-  <ResourceWrapper x:Key="QRHeight720" Resource="240" />
-  <ResourceWrapper x:Key="QRWidth1080" Resource="460" />
-  <ResourceWrapper x:Key="QRHeight1080" Resource="460" />
+  <ResourceWrapper x:Key="QRWidth720" Resource="120" />
+  <ResourceWrapper x:Key="QRHeight720" Resource="120" />
+  <ResourceWrapper x:Key="QRWidth1080" Resource="240" />
+  <ResourceWrapper x:Key="QRHeight1080" Resource="240" />
 
   <ResourceWrapper x:Key="TraktNotificationWidth" Resource="800"/>
-  <ResourceWrapper x:Key="TraktNotificationPanelMargin" Resource="10"/>
+  <ResourceWrapper x:Key="TraktNotificationPanelMargin" Resource="10,10,10,110"/>
 
+  <ResourceWrapper x:Key="TraktBarFillColor" Resource="White" />
+  <ResourceWrapper x:Key="TraktBarBackgroundColor" Resource="Black" />
+  
 </ResourceDictionary>

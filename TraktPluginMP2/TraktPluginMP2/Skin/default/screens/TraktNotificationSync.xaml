@@ -29,7 +29,7 @@ Parameters which have to be accessible by a DynamicResource lookup:
 
       <Grid>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="190" />
+          <ColumnDefinition Width="90" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -39,6 +39,8 @@ Parameters which have to be accessible by a DynamicResource lookup:
 
         <Label x:Name="NotificationHeader" Grid.ColumnSpan="2" Color="{ThemeResource OSDFontColor}" FontSize="{ThemeResource OSDHeaderFontSize}"
                Content="{DynamicResource Header_Text}" Margin="5,5,5,0"/>
+
+        <Image Grid.Row="1" Source="trakt.png" Height="70" Stretch="Uniform" HorizontalAlignment="Left" Margin="5"/>
 
       </Grid>
     </ControlTemplate>

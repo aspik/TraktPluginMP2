@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediaPortal.Common.Logging;
 using TraktApiSharp;
 using TraktApiSharp.Authentication;
 using TraktApiSharp.Exceptions;
@@ -21,8 +22,11 @@ namespace TraktPluginMP2.Services
 {
   public class TraktClientProxy : TraktClient, ITraktClient
   {
-    public TraktClientProxy(string clientId, string clientSecret) : base(clientId, clientSecret)
+    private readonly ILogger _logger;
+
+    public TraktClientProxy(string clientId, string clientSecret, ILogger logger) : base(clientId, clientSecret)
     {
+      _logger = logger;
     }
 
     public TraktAuthorization TraktAuthorization
@@ -248,9 +252,12 @@ namespace TraktPluginMP2.Services
     {
       aggregateException.Handle((x) =>
       {
-        if (x is TraktException)
+        TraktException ex = x as TraktException;
+        if (ex != null)
         {
-          throw new TraktException(x.Message);
+          _logger.Error("TraktApiSharp exception occurred: RequestBody: {0}, RequestUrl: {1}, Response: {2}, ServerReasonPhrase: {3}, StatusCode: {4} ",
+            ex.RequestBody, ex.RequestUrl, ex.Response, ex.ServerReasonPhrase, ex.StatusCode);
+          throw ex;
         }
         throw new TraktException("Unknown error in TraktApiSharp.");
       });

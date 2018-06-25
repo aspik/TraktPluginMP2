@@ -37,7 +37,7 @@ namespace TraktPluginMP2.Models
     public TraktSetupModel()
     {
       _mediaPortalServices = new MediaPortalServices();
-      _traktClient = new TraktClientProxy(ApplicationId, SecretId);
+      _traktClient = new TraktClientProxy(ApplicationId, SecretId, _mediaPortalServices.GetLogger());
       _fileOperations = new FileOperations();
       ITraktCache traktCache = new TraktCache(_mediaPortalServices, _traktClient, _fileOperations);
       _librarySynchronization = new LibrarySynchronization(_mediaPortalServices, _traktClient, traktCache,_fileOperations);

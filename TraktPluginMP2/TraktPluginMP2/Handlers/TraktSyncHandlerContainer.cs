@@ -11,7 +11,7 @@ namespace TraktPluginMP2.Handlers
     {
       IMediaPortalServices mediaPortalServices = new MediaPortalServices();
       IFileOperations fileOperations = new FileOperations();
-      ITraktClient traktClient = new TraktClientProxy(ApplicationId, SecretId);
+      ITraktClient traktClient = new TraktClientProxy(ApplicationId, SecretId, mediaPortalServices.GetLogger());
       ITraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 

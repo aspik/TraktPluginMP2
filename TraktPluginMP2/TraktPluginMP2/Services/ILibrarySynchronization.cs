@@ -5,5 +5,9 @@
     TraktSyncMoviesResult SyncMovies();
 
     TraktSyncEpisodesResult SyncSeries();
+
+    void BackupMovies();
+
+    void BackupSeries();
   }
 }

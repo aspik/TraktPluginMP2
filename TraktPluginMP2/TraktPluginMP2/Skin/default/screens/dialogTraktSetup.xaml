@@ -47,8 +47,9 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
-          
+
           <Button x:Name="Authorize" Content="[Trakt.Authorize]" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="0"
                   Command="{Command AuthorizeUser}" Margin="10" HorizontalContentAlignment="Center"/>
 
@@ -70,6 +71,9 @@
               </CommandList>
             </Button.Command>
           </Button>
+          
+          <Button x:Name="Backup" Content="[Trakt.Backup]" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="3"
+                  Command="{Command BackupLibrary}" Margin="10" HorizontalContentAlignment="Center"/>
         </Grid>
         
       </Grid>

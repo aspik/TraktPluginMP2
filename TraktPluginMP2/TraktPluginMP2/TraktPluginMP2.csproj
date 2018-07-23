@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TraktPluginMP2</RootNamespace>
     <AssemblyName>TraktPluginMP2</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -102,13 +103,11 @@
     <Compile Include="Structures\EpisodeCollected.cs" />
     <Compile Include="Structures\EpisodeWatched.cs" />
     <Compile Include="Structures\ListActivity.cs" />
+    <Compile Include="Structures\MediaLibraryMovie.cs" />
     <Compile Include="TraktSyncEpisodesResult.cs" />
     <Compile Include="TraktSyncMoviesResult.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />
     <Compile Include="Utilities\MediaItemAspectsUtl.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Language\strings_en.xml">
@@ -152,6 +151,9 @@
     <Content Include="Skin\default\superlayers\TraktSyncLibrarySuccessNotification.xaml">
       <SubType>Designer</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

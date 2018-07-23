@@ -152,7 +152,7 @@ namespace TraktPluginMP2.Models
           threadPool.Add(() =>
           {
             TestStatus = "[Trakt.SyncMovies]";
-            _librarySynchronization.SyncMovies();
+          //  _librarySynchronization.SyncMovies();
             TestStatus = "[Trakt.SyncSeries]";
             _librarySynchronization.SyncSeries();
             IsSynchronizing = false;
@@ -169,6 +169,28 @@ namespace TraktPluginMP2.Models
           TestStatus = "[Trakt.SyncingFailed]";
           _mediaPortalServices.GetLogger().Error(ex.Message);
         }
+      }
+    }
+
+    public void BackupLibrary()
+    {
+      try
+      {
+        IThreadPool threadPool = _mediaPortalServices.GetThreadPool();
+        threadPool.Add(() =>
+        {
+          TestStatus = "[Trakt.BackupMovies]";
+          _librarySynchronization.BackupMovies();
+          TestStatus = "[Trakt.BackupSeries]";
+          _librarySynchronization.BackupSeries();
+          IsSynchronizing = false;
+          TestStatus = "[Trakt.BackupFinished]";
+        }, ThreadPriority.BelowNormal);
+      }
+      catch (Exception ex)
+      {
+        TestStatus = "[Trakt.BackupFailed]";
+        _mediaPortalServices.GetLogger().Error(ex.Message);
       }
     }
 

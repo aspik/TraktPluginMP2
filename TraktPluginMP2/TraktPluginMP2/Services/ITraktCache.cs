@@ -8,16 +8,13 @@ namespace TraktPluginMP2.Services
 {
   public interface ITraktCache
   {
-    IEnumerable<TraktMovie> GetUnWatchedMovies();
-
-    IEnumerable<TraktWatchedMovie> GetWatchedMovies();
-
-    IEnumerable<TraktCollectionMovie> GetCollectedMovies();
-
-    IEnumerable<Episode> GetUnWatchedEpisodes();
-
-    IEnumerable<EpisodeWatched> GetWatchedEpisodes();
-
-    IEnumerable<EpisodeCollected> GetCollectedEpisodes();
+    void RefreshMoviesCache();
+    void RefreshSeriesCache();
+    IEnumerable<TraktMovie> UnWatchedMovies { get; } 
+    IEnumerable<TraktWatchedMovie> WatchedMovies { get; } 
+    IEnumerable<TraktCollectionMovie> CollectedMovies { get; }
+    IEnumerable<Episode> UnWatchedEpisodes { get; } 
+    IEnumerable<EpisodeWatched> WatchedEpisodes { get; } 
+    IEnumerable<EpisodeCollected> CollectedEpisodes { get; }
   }
 }

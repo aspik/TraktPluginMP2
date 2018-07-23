@@ -30,6 +30,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       SetFileOperationsForFile(fileOperations, DataPath, FileName.LastActivity.Value);
       SetFileOperationsForFile(fileOperations, DataPath, FileName.WatchedMovies.Value);
+      SetFileOperationsForFile(fileOperations, DataPath, FileName.CollectedMovies.Value);
 
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
       mediaPortalServices.GetTraktUserHomePath().Returns(DataPath);
@@ -37,9 +38,10 @@ namespace Tests
       TraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
 
       // Act
-      int actualUnWatchedMoviesCount = traktCache.GetUnWatchedMovies().Count();
+      traktCache.RefreshMoviesCache();
 
       // Assert
+      int actualUnWatchedMoviesCount = traktCache.UnWatchedMovies.Count();
       Assert.Equal(expectedUnWatchedMoviesCount, actualUnWatchedMoviesCount);
     }
 
@@ -55,6 +57,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       SetFileOperationsForFile(fileOperations, DataPath, FileName.LastActivity.Value);
       SetFileOperationsForFile(fileOperations, DataPath, FileName.WatchedMovies.Value);
+      SetFileOperationsForFile(fileOperations, DataPath, FileName.CollectedMovies.Value);
 
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
       mediaPortalServices.GetTraktUserHomePath().Returns(DataPath);
@@ -62,9 +65,10 @@ namespace Tests
       TraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
 
       // Act
-      int actualWatchedMoviesCount = traktCache.GetWatchedMovies().Count();
+      traktCache.RefreshMoviesCache();
 
       // Assert
+      int actualWatchedMoviesCount = traktCache.WatchedMovies.Count();
       Assert.Equal(expectedWatchedMoviesCount, actualWatchedMoviesCount);
     }
 
@@ -80,6 +84,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       SetFileOperationsForFile(fileOperations, DataPath, FileName.LastActivity.Value);
       SetFileOperationsForFile(fileOperations, DataPath, FileName.CollectedMovies.Value);
+      SetFileOperationsForFile(fileOperations, DataPath, FileName.WatchedMovies.Value);
 
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
       mediaPortalServices.GetTraktUserHomePath().Returns(DataPath);
@@ -87,9 +92,10 @@ namespace Tests
       TraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
 
       // Act
-      int actualCollectedMoviesCount = traktCache.GetCollectedMovies().Count();
+      traktCache.RefreshMoviesCache();
 
       // Assert
+      int actualCollectedMoviesCount = traktCache.CollectedMovies.Count();
       Assert.Equal(expectedCollectedMoviesCount, actualCollectedMoviesCount);
     }
 
@@ -105,6 +111,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       SetFileOperationsForFile(fileOperations, DataPath, FileName.LastActivity.Value);
       SetFileOperationsForFile(fileOperations, DataPath, FileName.WatchedEpisodes.Value);
+      SetFileOperationsForFile(fileOperations, DataPath, FileName.CollectedEpisodes.Value);
 
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
       mediaPortalServices.GetTraktUserHomePath().Returns(DataPath);
@@ -112,9 +119,10 @@ namespace Tests
       TraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
 
       // Act
-      int actualUnWatchedEpisodesCount = traktCache.GetUnWatchedEpisodes().Count();
- 
+      traktCache.RefreshSeriesCache();
+
       // Assert
+      int actualUnWatchedEpisodesCount = traktCache.UnWatchedEpisodes.Count();
       Assert.Equal(expectedUnWatchedEpisodesCount, actualUnWatchedEpisodesCount);
     }
 
@@ -130,6 +138,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       SetFileOperationsForFile(fileOperations, DataPath, FileName.LastActivity.Value);
       SetFileOperationsForFile(fileOperations, DataPath, FileName.WatchedEpisodes.Value);
+      SetFileOperationsForFile(fileOperations, DataPath, FileName.CollectedEpisodes.Value);
 
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
       mediaPortalServices.GetTraktUserHomePath().Returns(DataPath);
@@ -137,9 +146,10 @@ namespace Tests
       TraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
 
       // Act
-      int actualWatchedEpisodesCount = traktCache.GetWatchedEpisodes().Count();
+      traktCache.RefreshSeriesCache();
 
       // Assert
+      int actualWatchedEpisodesCount = traktCache.WatchedEpisodes.Count();
       Assert.Equal(expectedWatchedEpisodesCount, actualWatchedEpisodesCount);
     }
 
@@ -155,6 +165,7 @@ namespace Tests
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       SetFileOperationsForFile(fileOperations, DataPath, FileName.LastActivity.Value);
       SetFileOperationsForFile(fileOperations, DataPath, FileName.CollectedEpisodes.Value);
+      SetFileOperationsForFile(fileOperations, DataPath, FileName.WatchedEpisodes.Value);
 
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
       mediaPortalServices.GetTraktUserHomePath().Returns(DataPath);
@@ -162,9 +173,10 @@ namespace Tests
       TraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
       
       // Act
-      int actualCollectedEpisodesCount = traktCache.GetCollectedEpisodes().Count();
+      traktCache.RefreshSeriesCache();
 
       // Assert
+      int actualCollectedEpisodesCount = traktCache.CollectedEpisodes.Count();
       Assert.Equal(expectedCollectedEpisodesCount, actualCollectedEpisodesCount);
     }
 

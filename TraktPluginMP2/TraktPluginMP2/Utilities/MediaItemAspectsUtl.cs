@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MediaPortal.Common.MediaManagement;
 using MediaPortal.Common.MediaManagement.DefaultItemAspects;
+using MediaPortal.Common.UserProfileDataManagement;
 using TraktApiSharp.Enums;
 
 namespace TraktPluginMP2.Utilities
@@ -176,8 +177,19 @@ namespace TraktPluginMP2.Utilities
 
     public static bool IsWatched(MediaItem mediaItem)
     {
+      int playPercentage = 0;
+      if (mediaItem.UserData.ContainsKey(UserDataKeysKnown.KEY_PLAY_PERCENTAGE))
+      {
+        int.TryParse(mediaItem.UserData[UserDataKeysKnown.KEY_PLAY_PERCENTAGE], out playPercentage);
+      }
+
+      return playPercentage == 100;
+    }
+
+    public static int GetPlayCount(MediaItem mediaItem)
+    {
       int playCount;
-      return (MediaItemAspect.TryGetAttribute(mediaItem.Aspects, MediaAspect.ATTR_PLAYCOUNT, 0, out playCount) && playCount > 0);
+      return MediaItemAspect.TryGetAttribute(mediaItem.Aspects, MediaAspect.ATTR_PLAYCOUNT, 0, out playCount) ? playCount : 0;
     }
   }
 }

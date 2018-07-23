@@ -18,6 +18,9 @@ namespace TraktPluginMP2.Services
     private readonly ITraktClient _traktClient;
     private readonly IFileOperations _fileOperations;
 
+    private TraktSyncLastActivities _onlineSyncLastActivities;
+    private TraktSyncLastActivities _savedSyncLastActivities;
+
     public TraktCache(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, IFileOperations fileOperations)
     {
       _mediaPortalServices = mediaPortalServices;
@@ -25,17 +28,48 @@ namespace TraktPluginMP2.Services
       _fileOperations = fileOperations;
     }
 
-    public IEnumerable<TraktMovie> GetUnWatchedMovies()
+    public IEnumerable<TraktMovie> UnWatchedMovies { get; private set; } = new List<TraktMovie>();
+    public IEnumerable<TraktWatchedMovie> WatchedMovies { get; private set; } = new List<TraktWatchedMovie>();
+    public IEnumerable<TraktCollectionMovie> CollectedMovies { get; private set; } = new List<TraktCollectionMovie>();
+
+    public IEnumerable<Episode> UnWatchedEpisodes { get; private set; } = new List<Episode>();
+    public IEnumerable<EpisodeWatched> WatchedEpisodes { get; private set; } = new List<EpisodeWatched>();
+    public IEnumerable<EpisodeCollected> CollectedEpisodes { get; private set; } = new List<EpisodeCollected>();
+
+    public void RefreshMoviesCache()
     {
-      IEnumerable<TraktMovie> unWatchedMovies = new List<TraktMovie>();
-      IEnumerable<TraktWatchedMovie> previouslyWatched = GetCachedWatchedMovies();
+      _onlineSyncLastActivities = _traktClient.GetLastActivities();
+      _savedSyncLastActivities = SavedLastSyncActivities();
+
+      RefreshUnWatchedMovies();
+      RefreshWatchedMovies();
+      RefreshCollectedMovies();
+
+      SaveLastSyncActivities(_onlineSyncLastActivities);
+    }
+
+    public void RefreshSeriesCache()
+    {
+      _onlineSyncLastActivities = _traktClient.GetLastActivities();
+      _savedSyncLastActivities = SavedLastSyncActivities();
+
+      RefreshUnWatchedEpisodes();
+      RefreshWatchedEpisodes();
+      RefreshCollectedEpisodes();
+
+      SaveLastSyncActivities(_onlineSyncLastActivities);
+    }
+
+    private void RefreshUnWatchedMovies()
+    {
+      IEnumerable<TraktWatchedMovie> previouslyWatched = CachedWatchedMovies();
       IEnumerable<TraktWatchedMovie> currentWatched = _traktClient.GetWatchedMovies();
 
       // anything not in the current watched that is previously watched
       // must be unwatched now.
       if (previouslyWatched != null)
       {
-        unWatchedMovies = from pw in previouslyWatched
+        UnWatchedMovies = from pw in previouslyWatched
           where !currentWatched.Any(m => (m.Movie.Ids.Trakt == pw.Movie.Ids.Trakt || m.Movie.Ids.Imdb == pw.Movie.Ids.Imdb))
           select new TraktMovie
           {
@@ -44,52 +78,45 @@ namespace TraktPluginMP2.Services
             Year = pw.Movie.Year
           };
       }
-      return unWatchedMovies;
     }
 
-    public IEnumerable<TraktWatchedMovie> GetWatchedMovies()
+    private void RefreshWatchedMovies()
     {
-      IEnumerable <TraktWatchedMovie> watchedMovies;
-      TraktSyncLastActivities onlineSyncLastActivities = _traktClient.GetLastActivities();
-      TraktSyncLastActivities savedSyncLastActivities = GetSavedLastSyncActivities();
-      bool cacheIsUpToDate = onlineSyncLastActivities.Movies.WatchedAt == savedSyncLastActivities.Movies.WatchedAt;
-
-      if (cacheIsUpToDate)
-      {
-        watchedMovies = GetCachedWatchedMovies();
-      }
-      else
-      {
-        watchedMovies = _traktClient.GetWatchedMovies();
-        SaveWatchedMovies(watchedMovies);
-        SaveLastSyncActivities(onlineSyncLastActivities);
-      }
-      return watchedMovies;
+      DateTime? onlineWatchedMoviesDate = _onlineSyncLastActivities.Movies.WatchedAt;
+      DateTime? savedWatchedMoviesDate = _savedSyncLastActivities.Movies.WatchedAt;
+      WatchedMovies = IsCacheUpToDate(onlineWatchedMoviesDate, savedWatchedMoviesDate) ? CachedWatchedMovies() : OnlineWatchedMovies();
     }
 
-    public IEnumerable<TraktCollectionMovie> GetCollectedMovies()
+    private bool IsCacheUpToDate(DateTime? dateTime, DateTime? dateTime1)
     {
-      IEnumerable<TraktCollectionMovie> collectedMovies;
-      TraktSyncLastActivities onlineSyncLastActivities = _traktClient.GetLastActivities();
-      TraktSyncLastActivities savedSyncLastActivities = GetSavedLastSyncActivities();
-      bool cacheIsUpToDate = onlineSyncLastActivities.Movies.CollectedAt == savedSyncLastActivities.Movies.CollectedAt;
+      return dateTime == dateTime1;
+    }
 
-      if (cacheIsUpToDate)
-      {
-        collectedMovies = GetCachedCollectedMovies();
-      }
-      else
-      {
-        collectedMovies = _traktClient.GetCollectedMovies();
-        SaveCollectedMovies(collectedMovies);
-        SaveLastSyncActivities(onlineSyncLastActivities);
-      }
+    private void RefreshCollectedMovies()
+    {
+      DateTime? onlineCollectedMoviesDate = _onlineSyncLastActivities.Movies.CollectedAt;
+      DateTime? savedCollectedMoviesDate = _savedSyncLastActivities.Movies.CollectedAt;
+      CollectedMovies = IsCacheUpToDate(onlineCollectedMoviesDate, savedCollectedMoviesDate) ? CachedCollectedMovies() : OnlineCollectedMovies();
+    }
+
+    private IEnumerable<TraktCollectionMovie> OnlineCollectedMovies()
+    {
+      IEnumerable<TraktCollectionMovie> collectedMovies = _traktClient.GetCollectedMovies();
+      SaveCollectedMovies(collectedMovies);
+
       return collectedMovies;
     }
 
-    public IEnumerable<Episode> GetUnWatchedEpisodes()
+    private IEnumerable<TraktWatchedMovie> OnlineWatchedMovies()
     {
-      IEnumerable<Episode> previouslyWatched = GetCachedWatchedEpisodes();
+      IEnumerable<TraktWatchedMovie> watchedMovies = _traktClient.GetWatchedMovies();
+      SaveWatchedMovies(watchedMovies);
+      return watchedMovies;
+    }
+
+    private void RefreshUnWatchedEpisodes()
+    {
+      IEnumerable<Episode> previouslyWatched = CachedWatchedEpisodes();
       IEnumerable<TraktWatchedShow> currentWatchedShows = _traktClient.GetWatchedShows();
       IList<EpisodeWatched> currentEpisodesWatched = new List<EpisodeWatched>();
       // convert to internal data structure
@@ -119,7 +146,7 @@ namespace TraktPluginMP2.Services
       // Note: we can add to internal cache from external events, so we can't always rely on trakt id for comparisons
       ILookup<string, EpisodeWatched> dictCurrWatched = currentEpisodesWatched.ToLookup(cwe => cwe.ShowTvdbId + "_" + cwe.Season + "_" + cwe.Number);
 
-      IEnumerable<Episode> unWatchedEpisodes = from pwe in previouslyWatched
+      UnWatchedEpisodes = from pwe in previouslyWatched
                                                where !dictCurrWatched[pwe.ShowTvdbId + "_" + pwe.Season + "_" + pwe.Number].Any()
                                                select new Episode
                                                {
@@ -131,94 +158,86 @@ namespace TraktPluginMP2.Services
                                                  Season = pwe.Season,
                                                  Number = pwe.Number
                                                };
-      return unWatchedEpisodes;
     }
 
-    public IEnumerable<EpisodeWatched> GetWatchedEpisodes()
+    private IList<EpisodeWatched> OnlineWatchedEpisodes()
     {
       IList<EpisodeWatched> episodesWatched = new List<EpisodeWatched>();
-      TraktSyncLastActivities onlineSyncLastActivities = _traktClient.GetLastActivities();
-      TraktSyncLastActivities savedSyncLastActivities = GetSavedLastSyncActivities();
-      bool cacheIsUpToDate = onlineSyncLastActivities.Episodes.WatchedAt == savedSyncLastActivities.Episodes.WatchedAt;
 
-      if (cacheIsUpToDate)
-      {
-        episodesWatched = GetCachedWatchedEpisodes().ToList();
-      }
-      else
-      {
-        IEnumerable<TraktWatchedShow> watchedShows = _traktClient.GetWatchedShows();
+      IEnumerable<TraktWatchedShow> watchedShows = _traktClient.GetWatchedShows();
 
-        // convert to internal data structure
-        foreach (var show in watchedShows)
+      // convert to internal data structure
+      foreach (var show in watchedShows)
+      {
+        foreach (var season in show.Seasons)
         {
-          foreach (var season in show.Seasons)
+          foreach (var episode in season.Episodes)
           {
-            foreach (var episode in season.Episodes)
+            episodesWatched.Add(new EpisodeWatched
             {
-              episodesWatched.Add(new EpisodeWatched
-              {
-                ShowId = show.Show.Ids.Trakt,
-                ShowTvdbId = show.Show.Ids.Tvdb,
-                ShowImdbId = show.Show.Ids.Imdb,
-                ShowTitle = show.Show.Title,
-                ShowYear = show.Show.Year,
-                Number = episode.Number,
-                Plays = episode.Plays,
-                WatchedAt = episode.LastWatchedAt
-              });
-            }
+              ShowId = show.Show.Ids.Trakt,
+              ShowTvdbId = show.Show.Ids.Tvdb,
+              ShowImdbId = show.Show.Ids.Imdb,
+              ShowTitle = show.Show.Title,
+              ShowYear = show.Show.Year,
+              Number = episode.Number,
+              Plays = episode.Plays,
+              WatchedAt = episode.LastWatchedAt
+            });
           }
         }
-        SaveWatchedEpisodes(episodesWatched);
-        SaveLastSyncActivities(onlineSyncLastActivities);
       }
+      SaveWatchedEpisodes(episodesWatched);
       return episodesWatched;
     }
 
-    public IEnumerable<EpisodeCollected> GetCollectedEpisodes()
+    private void RefreshWatchedEpisodes()
+    {
+      DateTime? onlineWatchedEpisodesDate = _onlineSyncLastActivities.Episodes.WatchedAt;
+      DateTime? savedWatchedEpisodesDate = _savedSyncLastActivities.Episodes.WatchedAt;
+      WatchedEpisodes = IsCacheUpToDate(onlineWatchedEpisodesDate, savedWatchedEpisodesDate) ? CachedWatchedEpisodes() : OnlineWatchedEpisodes();
+    }
+
+    private void RefreshCollectedEpisodes()
+    {
+      DateTime? onlineCollectedEpisodesDate = _onlineSyncLastActivities.Episodes.CollectedAt;
+      DateTime? savedCollectedEpisodesDate = _savedSyncLastActivities.Episodes.CollectedAt;
+      CollectedEpisodes = IsCacheUpToDate(onlineCollectedEpisodesDate, savedCollectedEpisodesDate) ? CachedCollectedEpisodes() : OnlineCollectedEpisodes();
+    }
+
+    private IEnumerable<EpisodeCollected> OnlineCollectedEpisodes()
     {
       IList<EpisodeCollected> episodesCollected = new List<EpisodeCollected>();
-      TraktSyncLastActivities onlineSyncLastActivities = _traktClient.GetLastActivities();
-      TraktSyncLastActivities savedSyncLastActivities = GetSavedLastSyncActivities();
-      bool cacheIsUpToDate = onlineSyncLastActivities.Episodes.CollectedAt == savedSyncLastActivities.Episodes.CollectedAt;
 
-      if (cacheIsUpToDate)
-      {
-        episodesCollected = GetCachedCollectedEpisodes().ToList();
-      }
-      else
-      {
-        IEnumerable<TraktCollectionShow> collectedShows = _traktClient.GetCollectedShows();
+      IEnumerable<TraktCollectionShow> collectedShows = _traktClient.GetCollectedShows();
 
-        // convert to internal data structure
-        foreach (var show in collectedShows)
+      // convert to internal data structure
+      foreach (var show in collectedShows)
+      {
+        foreach (var season in show.Seasons)
         {
-          foreach (var season in show.Seasons)
+          foreach (var episode in season.Episodes)
           {
-            foreach (var episode in season.Episodes)
+            episodesCollected.Add(new EpisodeCollected
             {
-              episodesCollected.Add(new EpisodeCollected
-              {
-                ShowId = show.Show.Ids.Trakt,
-                ShowTvdbId = show.Show.Ids.Tvdb,
-                ShowImdbId = show.Show.Ids.Imdb,
-                ShowTitle = show.Show.Title,
-                ShowYear = show.Show.Year,
-                Number = episode.Number,
-                Season = season.Number,
-                CollectedAt = episode.CollectedAt
-              });
-            }
+              ShowId = show.Show.Ids.Trakt,
+              ShowTvdbId = show.Show.Ids.Tvdb,
+              ShowImdbId = show.Show.Ids.Imdb,
+              ShowTitle = show.Show.Title,
+              ShowYear = show.Show.Year,
+              Number = episode.Number,
+              Season = season.Number,
+              CollectedAt = episode.CollectedAt
+            });
           }
         }
-        SaveCollectedEpisodes(episodesCollected);
-        SaveLastSyncActivities(onlineSyncLastActivities);
       }
+      SaveCollectedEpisodes(episodesCollected);
+
       return episodesCollected;
     }
 
-    private TraktSyncLastActivities GetSavedLastSyncActivities()
+    private TraktSyncLastActivities SavedLastSyncActivities()
     {
       string traktUserHomePath = _mediaPortalServices.GetTraktUserHomePath();
       string savedSyncActivitiesFilePath = Path.Combine(traktUserHomePath, FileName.LastActivity.Value);
@@ -231,7 +250,7 @@ namespace TraktPluginMP2.Services
       return JsonConvert.DeserializeObject<TraktSyncLastActivities>(savedSyncActivitiesJson);
     }
 
-    private IEnumerable<TraktWatchedMovie> GetCachedWatchedMovies()
+    private IEnumerable<TraktWatchedMovie> CachedWatchedMovies()
     {
       IEnumerable<TraktWatchedMovie> watchedMovies = new List<TraktWatchedMovie>();
 
@@ -244,7 +263,7 @@ namespace TraktPluginMP2.Services
       return watchedMovies;
     }
 
-    private IEnumerable<TraktCollectionMovie> GetCachedCollectedMovies()
+    private IEnumerable<TraktCollectionMovie> CachedCollectedMovies()
     {
       IEnumerable<TraktCollectionMovie> collectedMovies = new List<TraktCollectionMovie>();
 
@@ -257,7 +276,7 @@ namespace TraktPluginMP2.Services
       return collectedMovies;
     }
 
-    private IEnumerable<EpisodeWatched> GetCachedWatchedEpisodes()
+    private IEnumerable<EpisodeWatched> CachedWatchedEpisodes()
     {
       IEnumerable<EpisodeWatched> watchedEpisodes = new List<EpisodeWatched>();
 
@@ -270,7 +289,7 @@ namespace TraktPluginMP2.Services
       return watchedEpisodes;
     }
 
-    private IEnumerable<EpisodeCollected> GetCachedCollectedEpisodes()
+    private IEnumerable<EpisodeCollected> CachedCollectedEpisodes()
     {
       IEnumerable<EpisodeCollected> collectedEpisodes = new List<EpisodeCollected>();
 

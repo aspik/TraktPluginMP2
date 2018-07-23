@@ -9,6 +9,7 @@
   <string name="Trakt.Authorize">Authorize</string>
   <string name="Trakt.Sync">Sync with trakt</string>
   <string name="Trakt.Close">Close</string>
+  <string name="Trakt.Backup">Backup library</string>
   
   <string name="Trakt.SyncMovies">Synchronizing movies...</string>
   <string name="Trakt.SyncSeries">Synchronizing series...</string>

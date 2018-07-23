@@ -47,15 +47,18 @@ namespace TraktPluginMP2.Services
 
       ValidateAuthorization();
 
+      _traktCache.RefreshMoviesCache();
+
       TraktSyncMoviesResult syncMoviesResult = new TraktSyncMoviesResult();
-      IList<TraktMovie> traktUnWatchedMovies = _traktCache.GetUnWatchedMovies().ToList();
-      IList<TraktWatchedMovie> traktWatchedMovies = _traktCache.GetWatchedMovies().ToList();
-      IList<TraktCollectionMovie> traktCollectedMovies = _traktCache.GetCollectedMovies().ToList();
+      IList<TraktMovie> traktUnWatchedMovies = _traktCache.UnWatchedMovies.ToList();
+      IList<TraktWatchedMovie> traktWatchedMovies = _traktCache.WatchedMovies.ToList();
+      IList<TraktCollectionMovie> traktCollectedMovies = _traktCache.CollectedMovies.ToList();
 
       Guid[] types =
       {
         MediaAspect.ASPECT_ID, MovieAspect.ASPECT_ID, VideoAspect.ASPECT_ID, ImporterAspect.ASPECT_ID,
-        ExternalIdentifierAspect.ASPECT_ID, ProviderResourceAspect.ASPECT_ID
+        ExternalIdentifierAspect.ASPECT_ID, ProviderResourceAspect.ASPECT_ID, VideoStreamAspect.ASPECT_ID,
+        VideoAudioStreamAspect.ASPECT_ID
       };
 
       IContentDirectory contentDirectory = _mediaPortalServices.GetServerConnectionManager().ContentDirectory;
@@ -98,7 +101,7 @@ namespace TraktPluginMP2.Services
       {
         foreach (var movie in traktUnWatchedMovies)
         {
-          var localMovie = collectedMovies.FirstOrDefault(m => MovieMatch(m, movie));
+          var localMovie = watchedMovies.FirstOrDefault(m => MovieMatch(m, movie));
           if (localMovie == null)
           {
             continue;
@@ -211,6 +214,15 @@ namespace TraktPluginMP2.Services
       {
         _mediaPortalServices.GetLogger().Info("Trakt: trying to add {0} collected movies to trakt collection", syncCollectedMovies.Count);
 
+        foreach (var traktSyncCollectionPostMovie in syncCollectedMovies)
+        {
+          string audio = traktSyncCollectionPostMovie.Metadata.Audio?.DisplayName;
+          string channel = traktSyncCollectionPostMovie.Metadata.AudioChannels?.DisplayName;
+          string res = traktSyncCollectionPostMovie.Metadata.MediaResolution?.DisplayName;
+          string mediatype = traktSyncCollectionPostMovie.Metadata.MediaType?.DisplayName;
+          string name = traktSyncCollectionPostMovie.Title;
+          _mediaPortalServices.GetLogger().Info("Trakt: {0}, {1}, {2}, {3}, {4}", audio, channel, res, mediatype, name);
+        }
         TraktSyncCollectionPostResponse collectionResponse = _traktClient.AddCollectionItems(new TraktSyncCollectionPost { Movies = syncCollectedMovies });
         syncMoviesResult.AddedToTraktCollection = collectionResponse.Added?.Movies;
 
@@ -230,10 +242,12 @@ namespace TraktPluginMP2.Services
 
       ValidateAuthorization();
 
+      _traktCache.RefreshSeriesCache();
+
       TraktSyncEpisodesResult syncEpisodesResult = new TraktSyncEpisodesResult();
-      IList<Episode> traktUnWatchedEpisodes = _traktCache.GetUnWatchedEpisodes().ToList();
-      IList<EpisodeWatched> traktWatchedEpisodes = _traktCache.GetWatchedEpisodes().ToList();
-      IList<EpisodeCollected> traktCollectedEpisodes = _traktCache.GetCollectedEpisodes().ToList();
+      IList<Episode> traktUnWatchedEpisodes = _traktCache.UnWatchedEpisodes.ToList();
+      IList<EpisodeWatched> traktWatchedEpisodes = _traktCache.WatchedEpisodes.ToList();
+      IList<EpisodeCollected> traktCollectedEpisodes = _traktCache.CollectedEpisodes.ToList();
 
       Guid[] types =
       {
@@ -374,6 +388,58 @@ namespace TraktPluginMP2.Services
       #endregion
 
       return syncEpisodesResult;
+    }
+
+    public void BackupMovies()
+    {
+      Guid[] types =
+      {
+        MediaAspect.ASPECT_ID, MovieAspect.ASPECT_ID, VideoAspect.ASPECT_ID, ImporterAspect.ASPECT_ID,
+        ExternalIdentifierAspect.ASPECT_ID, ProviderResourceAspect.ASPECT_ID, VideoStreamAspect.ASPECT_ID,
+        VideoAudioStreamAspect.ASPECT_ID
+      };
+
+      IContentDirectory contentDirectory = _mediaPortalServices.GetServerConnectionManager().ContentDirectory;
+      if (contentDirectory == null)
+      {
+        throw new MediaLibraryNotConnectedException("ML not connected");
+      }
+
+      Guid? userProfile = null;
+      IUserManagement userProfileDataManagement = _mediaPortalServices.GetUserManagement();
+      if (userProfileDataManagement != null && userProfileDataManagement.IsValidUser)
+      {
+        userProfile = userProfileDataManagement.CurrentUser.ProfileId;
+      }
+
+      IList<MediaItem> collectedMovies = contentDirectory.SearchAsync(new MediaItemQuery(types, null, null), true, userProfile, false).Result;
+      IList<MediaLibraryMovie> libraryMovies = new List<MediaLibraryMovie>();
+
+      foreach (MediaItem collectedMovie in collectedMovies)
+      {
+        libraryMovies.Add(new MediaLibraryMovie
+        {
+          Title = MediaItemAspectsUtl.GetMovieTitle(collectedMovie),
+          AddedToDb = MediaItemAspectsUtl.GetDateAddedToDb(collectedMovie).ToString("O"),
+          LastPlayed = MediaItemAspectsUtl.GetLastPlayedDate(collectedMovie).ToString("O"),
+          PlayCount = MediaItemAspectsUtl.GetPlayCount(collectedMovie),
+          Imdb = MediaItemAspectsUtl.GetMovieImdbId(collectedMovie),
+          Year = MediaItemAspectsUtl.GetMovieYear(collectedMovie)
+        });
+      }
+      SaveLibraryMovies(libraryMovies);
+    }
+
+    private void SaveLibraryMovies(IEnumerable<MediaLibraryMovie> libraryMovies)
+    {
+      string libraryMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.MediaLibraryMovies.Value);
+      string libraryMoviesJson = JsonConvert.SerializeObject(libraryMovies);
+      _fileOperations.FileWriteAllText(libraryMoviesPath, libraryMoviesJson, Encoding.UTF8);
+    }
+
+    public void BackupSeries()
+    {
+      
     }
 
     private void ValidateAuthorization()

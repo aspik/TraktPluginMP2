@@ -16,6 +16,7 @@
     public static FileName Authorization { get { return new FileName("authorization.json"); } }
     public static FileName WatchedMovies { get { return new FileName("watched.movies.json"); } }
     public static FileName CollectedMovies { get { return new FileName("collected.movies.json"); } }
+    public static FileName MediaLibraryMovies { get { return new FileName("media.library.movies.json"); } }
     public static FileName WatchedEpisodes { get { return new FileName("watched.episodes.json"); } }
     public static FileName CollectedEpisodes { get { return new FileName("collected.episodes.json"); } }
     public static FileName UserSettings { get { return new FileName("user.settings.json"); } }

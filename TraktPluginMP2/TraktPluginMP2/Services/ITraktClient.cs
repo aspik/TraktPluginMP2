@@ -50,5 +50,9 @@ namespace TraktPluginMP2.Services
     TraktEpisodeScrobblePostResponse StartScrobbleEpisode(TraktEpisode episode, TraktShow traktShow, float progress, string appVersion = null, DateTime? appBuildDate = null);
 
     TraktEpisodeScrobblePostResponse StopScrobbleEpisode(TraktEpisode episode, TraktShow traktShow, float progress, string appVersion = null, DateTime? appBuildDate = null);
+
+    TraktSyncCollectionRemovePostResponse RemoveCollectionItems(TraktSyncCollectionPost collectionRemovePost);
+
+    TraktSyncHistoryRemovePostResponse RemoveWatchedHistoryItems(TraktSyncHistoryRemovePost historyRemovePost);
   }
 }

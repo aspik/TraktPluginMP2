@@ -248,6 +248,35 @@ namespace TraktPluginMP2.Services
       return result;
     }
 
+    public TraktSyncCollectionRemovePostResponse RemoveCollectionItems(TraktSyncCollectionPost collectionRemovePost)
+    {
+      TraktSyncCollectionRemovePostResponse result = null;
+      try
+      {
+        result = Task.Run(() => base.Sync.RemoveCollectionItemsAsync(collectionRemovePost)).Result;
+      }
+      catch (AggregateException aggregateException)
+      {
+        UnwrapAggregateException(aggregateException);
+      }
+      return result;
+    }
+
+    public TraktSyncHistoryRemovePostResponse RemoveWatchedHistoryItems(TraktSyncHistoryRemovePost historyRemovePost)
+    {
+      TraktSyncHistoryRemovePostResponse result = null;
+      try
+      {
+        result = Task.Run(() => base.Sync.RemoveWatchedHistoryItemsAsync(historyRemovePost)).Result;
+      }
+      catch (AggregateException aggregateException)
+      {
+        UnwrapAggregateException(aggregateException);
+      }
+      return result;
+    }
+
+
     private void UnwrapAggregateException(AggregateException aggregateException)
     {
       aggregateException.Handle((x) =>

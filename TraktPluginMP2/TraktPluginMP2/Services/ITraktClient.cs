@@ -1,58 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using TraktApiSharp.Attributes;
-using TraktApiSharp.Authentication;
-using TraktApiSharp.Modules;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Get.Shows;
-using TraktApiSharp.Objects.Get.Shows.Episodes;
-using TraktApiSharp.Objects.Get.Syncs.Activities;
-using TraktApiSharp.Objects.Get.Users;
-using TraktApiSharp.Objects.Get.Watched;
-using TraktApiSharp.Objects.Post.Scrobbles.Responses;
-using TraktApiSharp.Objects.Post.Syncs.Collection;
-using TraktApiSharp.Objects.Post.Syncs.Collection.Responses;
-using TraktApiSharp.Objects.Post.Syncs.History;
-using TraktApiSharp.Objects.Post.Syncs.History.Responses;
+using TraktNet.Objects.Authentication;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Episodes;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Get.Shows;
+using TraktNet.Objects.Get.Syncs.Activities;
+using TraktNet.Objects.Get.Users;
+using TraktNet.Objects.Get.Watched;
+using TraktNet.Objects.Post.Scrobbles.Responses;
+using TraktNet.Objects.Post.Syncs.Collection;
+using TraktNet.Objects.Post.Syncs.Collection.Responses;
+using TraktNet.Objects.Post.Syncs.History;
+using TraktNet.Objects.Post.Syncs.History.Responses;
 
 namespace TraktPluginMP2.Services
 {
   public interface ITraktClient
   {
-    TraktAuthorization TraktAuthorization { get; }
+    ITraktAuthorization TraktAuthorization { get; }
 
-    TraktAuthorization GetAuthorization(string code);
+    ITraktAuthorization GetAuthorization(string code);
 
-    TraktUserSettings GetTraktUserSettings();
+    ITraktUserSettings GetTraktUserSettings();
 
-    TraktAuthorization RefreshAuthorization(string refreshToken);
+    ITraktAuthorization RefreshAuthorization(string refreshToken);
 
-    TraktSyncHistoryPostResponse AddWatchedHistoryItems(TraktSyncHistoryPost historyPost);
+    ITraktSyncHistoryPostResponse AddWatchedHistoryItems(ITraktSyncHistoryPost historyPost);
 
-    TraktSyncCollectionPostResponse AddCollectionItems(TraktSyncCollectionPost collectionPost);
+    ITraktSyncCollectionPostResponse AddCollectionItems(ITraktSyncCollectionPost collectionPost);
 
-    TraktSyncLastActivities GetLastActivities();
+    ITraktSyncLastActivities GetLastActivities();
 
-    IEnumerable<TraktWatchedMovie> GetWatchedMovies();
+    IEnumerable<ITraktWatchedMovie> GetWatchedMovies();
 
-    IEnumerable<TraktCollectionMovie> GetCollectedMovies();
+    IEnumerable<ITraktCollectionMovie> GetCollectedMovies();
 
-    IEnumerable<TraktWatchedShow> GetWatchedShows();
+    IEnumerable<ITraktWatchedShow> GetWatchedShows();
 
-    IEnumerable<TraktCollectionShow> GetCollectedShows();
+    IEnumerable<ITraktCollectionShow> GetCollectedShows();
 
-    TraktMovieScrobblePostResponse StartScrobbleMovie(TraktMovie movie, float progress, string appVersion = null, DateTime? appBuildDate = null);
+    ITraktMovieScrobblePostResponse StartScrobbleMovie(ITraktMovie movie, float progress, string appVersion = null, DateTime? appBuildDate = null);
 
-    TraktMovieScrobblePostResponse StopScrobbleMovie(TraktMovie movie, float progress, string appVersion = null, DateTime? appBuildDate = null);
+    ITraktMovieScrobblePostResponse StopScrobbleMovie(ITraktMovie movie, float progress, string appVersion = null, DateTime? appBuildDate = null);
 
-    TraktEpisodeScrobblePostResponse StartScrobbleEpisode(TraktEpisode episode, TraktShow traktShow, float progress, string appVersion = null, DateTime? appBuildDate = null);
+    ITraktEpisodeScrobblePostResponse StartScrobbleEpisode(ITraktEpisode episode, ITraktShow traktShow, float progress, string appVersion = null, DateTime? appBuildDate = null);
 
-    TraktEpisodeScrobblePostResponse StopScrobbleEpisode(TraktEpisode episode, TraktShow traktShow, float progress, string appVersion = null, DateTime? appBuildDate = null);
+    ITraktEpisodeScrobblePostResponse StopScrobbleEpisode(ITraktEpisode episode, ITraktShow traktShow, float progress, string appVersion = null, DateTime? appBuildDate = null);
 
-    TraktSyncCollectionRemovePostResponse RemoveCollectionItems(TraktSyncCollectionPost collectionRemovePost);
+    ITraktSyncCollectionRemovePostResponse RemoveCollectionItems(ITraktSyncCollectionPost collectionRemovePost);
 
-    TraktSyncHistoryRemovePostResponse RemoveWatchedHistoryItems(TraktSyncHistoryRemovePost historyRemovePost);
+    ITraktSyncHistoryRemovePostResponse RemoveWatchedHistoryItems(ITraktSyncHistoryRemovePost historyRemovePost);
   }
 }

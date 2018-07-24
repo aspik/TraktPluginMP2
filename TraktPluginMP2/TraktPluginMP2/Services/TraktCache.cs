@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Get.Syncs.Activities;
-using TraktApiSharp.Objects.Get.Watched;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Get.Syncs.Activities;
+using TraktNet.Objects.Get.Watched;
 using TraktPluginMP2.Structures;
 
 namespace TraktPluginMP2.Services
@@ -18,8 +18,8 @@ namespace TraktPluginMP2.Services
     private readonly ITraktClient _traktClient;
     private readonly IFileOperations _fileOperations;
 
-    private TraktSyncLastActivities _onlineSyncLastActivities;
-    private TraktSyncLastActivities _savedSyncLastActivities;
+    private ITraktSyncLastActivities _onlineSyncLastActivities;
+    private ITraktSyncLastActivities _savedSyncLastActivities;
 
     public TraktCache(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, IFileOperations fileOperations)
     {
@@ -28,9 +28,9 @@ namespace TraktPluginMP2.Services
       _fileOperations = fileOperations;
     }
 
-    public IEnumerable<TraktMovie> UnWatchedMovies { get; private set; } = new List<TraktMovie>();
-    public IEnumerable<TraktWatchedMovie> WatchedMovies { get; private set; } = new List<TraktWatchedMovie>();
-    public IEnumerable<TraktCollectionMovie> CollectedMovies { get; private set; } = new List<TraktCollectionMovie>();
+    public IEnumerable<ITraktMovie> UnWatchedMovies { get; private set; } = new List<TraktMovie>();
+    public IEnumerable<ITraktWatchedMovie> WatchedMovies { get; private set; } = new List<TraktWatchedMovie>();
+    public IEnumerable<ITraktCollectionMovie> CollectedMovies { get; private set; } = new List<TraktCollectionMovie>();
 
     public IEnumerable<Episode> UnWatchedEpisodes { get; private set; } = new List<Episode>();
     public IEnumerable<EpisodeWatched> WatchedEpisodes { get; private set; } = new List<EpisodeWatched>();
@@ -62,8 +62,8 @@ namespace TraktPluginMP2.Services
 
     private void RefreshUnWatchedMovies()
     {
-      IEnumerable<TraktWatchedMovie> previouslyWatched = CachedWatchedMovies();
-      IEnumerable<TraktWatchedMovie> currentWatched = _traktClient.GetWatchedMovies();
+      IEnumerable<ITraktWatchedMovie> previouslyWatched = CachedWatchedMovies();
+      IEnumerable<ITraktWatchedMovie> currentWatched = _traktClient.GetWatchedMovies();
 
       // anything not in the current watched that is previously watched
       // must be unwatched now.
@@ -99,17 +99,17 @@ namespace TraktPluginMP2.Services
       CollectedMovies = IsCacheUpToDate(onlineCollectedMoviesDate, savedCollectedMoviesDate) ? CachedCollectedMovies() : OnlineCollectedMovies();
     }
 
-    private IEnumerable<TraktCollectionMovie> OnlineCollectedMovies()
+    private IEnumerable<ITraktCollectionMovie> OnlineCollectedMovies()
     {
-      IEnumerable<TraktCollectionMovie> collectedMovies = _traktClient.GetCollectedMovies();
+      IEnumerable<ITraktCollectionMovie> collectedMovies = _traktClient.GetCollectedMovies();
       SaveCollectedMovies(collectedMovies);
 
       return collectedMovies;
     }
 
-    private IEnumerable<TraktWatchedMovie> OnlineWatchedMovies()
+    private IEnumerable<ITraktWatchedMovie> OnlineWatchedMovies()
     {
-      IEnumerable<TraktWatchedMovie> watchedMovies = _traktClient.GetWatchedMovies();
+      IEnumerable<ITraktWatchedMovie> watchedMovies = _traktClient.GetWatchedMovies();
       SaveWatchedMovies(watchedMovies);
       return watchedMovies;
     }
@@ -117,7 +117,7 @@ namespace TraktPluginMP2.Services
     private void RefreshUnWatchedEpisodes()
     {
       IEnumerable<Episode> previouslyWatched = CachedWatchedEpisodes();
-      IEnumerable<TraktWatchedShow> currentWatchedShows = _traktClient.GetWatchedShows();
+      IEnumerable<ITraktWatchedShow> currentWatchedShows = _traktClient.GetWatchedShows();
       IList<EpisodeWatched> currentEpisodesWatched = new List<EpisodeWatched>();
       // convert to internal data structure
       foreach (var show in currentWatchedShows)
@@ -135,8 +135,8 @@ namespace TraktPluginMP2.Services
               ShowYear = show.Show.Year,
               Season = season.Number,
               Number = episode.Number,
-              Plays = episode.Plays,
-              WatchedAt = episode.LastWatchedAt
+             // Plays = episode.Plays,
+             // WatchedAt = episode.LastWatchedAt
             });
           }
         }
@@ -164,7 +164,7 @@ namespace TraktPluginMP2.Services
     {
       IList<EpisodeWatched> episodesWatched = new List<EpisodeWatched>();
 
-      IEnumerable<TraktWatchedShow> watchedShows = _traktClient.GetWatchedShows();
+      IEnumerable<ITraktWatchedShow> watchedShows = _traktClient.GetWatchedShows();
 
       // convert to internal data structure
       foreach (var show in watchedShows)
@@ -181,8 +181,8 @@ namespace TraktPluginMP2.Services
               ShowTitle = show.Show.Title,
               ShowYear = show.Show.Year,
               Number = episode.Number,
-              Plays = episode.Plays,
-              WatchedAt = episode.LastWatchedAt
+             // Plays = episode.Plays,
+             // WatchedAt = episode.LastWatchedAt
             });
           }
         }
@@ -209,7 +209,7 @@ namespace TraktPluginMP2.Services
     {
       IList<EpisodeCollected> episodesCollected = new List<EpisodeCollected>();
 
-      IEnumerable<TraktCollectionShow> collectedShows = _traktClient.GetCollectedShows();
+      IEnumerable<ITraktCollectionShow> collectedShows = _traktClient.GetCollectedShows();
 
       // convert to internal data structure
       foreach (var show in collectedShows)
@@ -227,7 +227,7 @@ namespace TraktPluginMP2.Services
               ShowYear = show.Show.Year,
               Number = episode.Number,
               Season = season.Number,
-              CollectedAt = episode.CollectedAt
+              //CollectedAt = episode.CollectedAt
             });
           }
         }
@@ -250,28 +250,28 @@ namespace TraktPluginMP2.Services
       return JsonConvert.DeserializeObject<TraktSyncLastActivities>(savedSyncActivitiesJson);
     }
 
-    private IEnumerable<TraktWatchedMovie> CachedWatchedMovies()
+    private IEnumerable<ITraktWatchedMovie> CachedWatchedMovies()
     {
-      IEnumerable<TraktWatchedMovie> watchedMovies = new List<TraktWatchedMovie>();
+      IEnumerable<ITraktWatchedMovie> watchedMovies = new List<ITraktWatchedMovie>();
 
       string watchedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.WatchedMovies.Value);
       if (_fileOperations.FileExists(watchedMoviesPath))
       {
         string watchedMoviesJson = _fileOperations.FileReadAllText(watchedMoviesPath);
-        watchedMovies = JsonConvert.DeserializeObject<List<TraktWatchedMovie>>(watchedMoviesJson);
+        watchedMovies = JsonConvert.DeserializeObject<List<ITraktWatchedMovie>>(watchedMoviesJson);
       }
       return watchedMovies;
     }
 
-    private IEnumerable<TraktCollectionMovie> CachedCollectedMovies()
+    private IEnumerable<ITraktCollectionMovie> CachedCollectedMovies()
     {
-      IEnumerable<TraktCollectionMovie> collectedMovies = new List<TraktCollectionMovie>();
+      IEnumerable<ITraktCollectionMovie> collectedMovies = new List<ITraktCollectionMovie>();
 
       string collectedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.CollectedMovies.Value);
       if (_fileOperations.FileExists(collectedMoviesPath))
       {
         string collectedMoviesJson = _fileOperations.FileReadAllText(collectedMoviesPath);
-        collectedMovies = JsonConvert.DeserializeObject<List<TraktCollectionMovie>>(collectedMoviesJson);
+        collectedMovies = JsonConvert.DeserializeObject<List<ITraktCollectionMovie>>(collectedMoviesJson);
       }
       return collectedMovies;
     }
@@ -302,21 +302,21 @@ namespace TraktPluginMP2.Services
       return collectedEpisodes;
     }
 
-    private void SaveLastSyncActivities(TraktSyncLastActivities syncLastActivities)
+    private void SaveLastSyncActivities(ITraktSyncLastActivities syncLastActivities)
     {
       string lastSyncActivitiesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.LastActivity.Value);
       string lastSyncActivitiesJson = JsonConvert.SerializeObject(syncLastActivities);
       _fileOperations.FileWriteAllText(lastSyncActivitiesPath, lastSyncActivitiesJson, Encoding.UTF8);
     }
 
-    private void SaveWatchedMovies(IEnumerable<TraktWatchedMovie> watchedMovies)
+    private void SaveWatchedMovies(IEnumerable<ITraktWatchedMovie> watchedMovies)
     {
       string watchedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.WatchedMovies.Value);
       string watchedMoviesJson = JsonConvert.SerializeObject(watchedMovies);
       _fileOperations.FileWriteAllText(watchedMoviesPath, watchedMoviesJson, Encoding.UTF8);
     }
 
-    private void SaveCollectedMovies(IEnumerable<TraktCollectionMovie> collectedMovies)
+    private void SaveCollectedMovies(IEnumerable<ITraktCollectionMovie> collectedMovies)
     {
       string collectedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.CollectedMovies.Value);
       string collectedMoviesJson = JsonConvert.SerializeObject(collectedMovies);

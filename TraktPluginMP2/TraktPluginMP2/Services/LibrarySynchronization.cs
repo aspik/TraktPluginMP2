@@ -9,17 +9,17 @@ using MediaPortal.Common.MediaManagement.MLQueries;
 using MediaPortal.Common.SystemCommunication;
 using MediaPortal.Common.UserManagement;
 using Newtonsoft.Json;
-using TraktApiSharp.Authentication;
-using TraktApiSharp.Objects.Basic;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Get.Shows;
-using TraktApiSharp.Objects.Get.Watched;
-using TraktApiSharp.Objects.Post;
-using TraktApiSharp.Objects.Post.Syncs.Collection;
-using TraktApiSharp.Objects.Post.Syncs.Collection.Responses;
-using TraktApiSharp.Objects.Post.Syncs.History;
-using TraktApiSharp.Objects.Post.Syncs.History.Responses;
+using TraktNet.Objects.Authentication;
+using TraktNet.Objects.Basic;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Get.Shows;
+using TraktNet.Objects.Get.Watched;
+using TraktNet.Objects.Post;
+using TraktNet.Objects.Post.Syncs.Collection;
+using TraktNet.Objects.Post.Syncs.Collection.Responses;
+using TraktNet.Objects.Post.Syncs.History;
+using TraktNet.Objects.Post.Syncs.History.Responses;
 using TraktPluginMP2.Exceptions;
 using TraktPluginMP2.Structures;
 using TraktPluginMP2.Utilities;
@@ -50,9 +50,9 @@ namespace TraktPluginMP2.Services
       _traktCache.RefreshMoviesCache();
 
       TraktSyncMoviesResult syncMoviesResult = new TraktSyncMoviesResult();
-      IList<TraktMovie> traktUnWatchedMovies = _traktCache.UnWatchedMovies.ToList();
-      IList<TraktWatchedMovie> traktWatchedMovies = _traktCache.WatchedMovies.ToList();
-      IList<TraktCollectionMovie> traktCollectedMovies = _traktCache.CollectedMovies.ToList();
+      IList<ITraktMovie> traktUnWatchedMovies = _traktCache.UnWatchedMovies.ToList();
+      IList<ITraktWatchedMovie> traktWatchedMovies = _traktCache.WatchedMovies.ToList();
+      IList<ITraktCollectionMovie> traktCollectedMovies = _traktCache.CollectedMovies.ToList();
 
       Guid[] types =
       {
@@ -173,7 +173,7 @@ namespace TraktPluginMP2.Services
       {
         _mediaPortalServices.GetLogger().Info("Trakt: trying to add {0} watched movies to trakt watched history", syncWatchedMovies.Count);
 
-        TraktSyncHistoryPostResponse watchedResponse = _traktClient.AddWatchedHistoryItems(new TraktSyncHistoryPost { Movies = syncWatchedMovies });
+        ITraktSyncHistoryPostResponse watchedResponse = _traktClient.AddWatchedHistoryItems(new TraktSyncHistoryPost { Movies = syncWatchedMovies });
         syncMoviesResult.AddedToTraktWatchedHistory = watchedResponse.Added?.Movies;
 
         if (watchedResponse.Added?.Movies != null)
@@ -223,7 +223,7 @@ namespace TraktPluginMP2.Services
           string name = traktSyncCollectionPostMovie.Title;
           _mediaPortalServices.GetLogger().Info("Trakt: {0}, {1}, {2}, {3}, {4}", audio, channel, res, mediatype, name);
         }
-        TraktSyncCollectionPostResponse collectionResponse = _traktClient.AddCollectionItems(new TraktSyncCollectionPost { Movies = syncCollectedMovies });
+        ITraktSyncCollectionPostResponse collectionResponse = _traktClient.AddCollectionItems(new TraktSyncCollectionPost { Movies = syncCollectedMovies });
         syncMoviesResult.AddedToTraktCollection = collectionResponse.Added?.Movies;
 
         if (collectionResponse.Added?.Movies != null)
@@ -355,11 +355,11 @@ namespace TraktPluginMP2.Services
 
       #region Add episodes to watched history at trakt.tv
 
-      TraktSyncHistoryPost syncHistoryPost = GetWatchedShowsForSync(localWatchedEpisodes, traktWatchedEpisodes);
+      ITraktSyncHistoryPost syncHistoryPost = GetWatchedShowsForSync(localWatchedEpisodes, traktWatchedEpisodes);
       if (syncHistoryPost.Shows != null && syncHistoryPost.Shows.Any())
       {
         _mediaPortalServices.GetLogger().Info("Trakt: trying to add {0} watched episodes to trakt watched history", syncHistoryPost.Shows.Count());
-        TraktSyncHistoryPostResponse response = _traktClient.AddWatchedHistoryItems(syncHistoryPost);
+        ITraktSyncHistoryPostResponse response = _traktClient.AddWatchedHistoryItems(syncHistoryPost);
         syncEpisodesResult.AddedToTraktWatchedHistory = response.Added?.Episodes;
 
         if (response.Added?.Episodes != null)
@@ -372,11 +372,11 @@ namespace TraktPluginMP2.Services
 
       #region Add episodes to collection at trakt.tv
 
-      TraktSyncCollectionPost syncCollectionPost = GetCollectedShowsForSync(localEpisodes, traktCollectedEpisodes);
+      ITraktSyncCollectionPost syncCollectionPost = GetCollectedShowsForSync(localEpisodes, traktCollectedEpisodes);
       if (syncCollectionPost.Shows != null && syncCollectionPost.Shows.Any())
       {
         _mediaPortalServices.GetLogger().Info("Trakt: trying to add {0} collected episodes to trakt collection", syncCollectionPost.Shows.Count());
-        TraktSyncCollectionPostResponse response = _traktClient.AddCollectionItems(syncCollectionPost);
+        ITraktSyncCollectionPostResponse response = _traktClient.AddCollectionItems(syncCollectionPost);
         syncEpisodesResult.AddedToTraktCollection = response.Added?.Episodes;
 
         if (response.Added?.Episodes != null)
@@ -455,7 +455,7 @@ namespace TraktPluginMP2.Services
           throw new Exception("Saved authorization is not valid.");
         }
 
-        TraktAuthorization refreshedAuth = _traktClient.RefreshAuthorization(savedAuth.RefreshToken);
+        ITraktAuthorization refreshedAuth = _traktClient.RefreshAuthorization(savedAuth.RefreshToken);
         string serializedAuth = JsonConvert.SerializeObject(refreshedAuth);
         _fileOperations.FileWriteAllText(authFilePath, serializedAuth, Encoding.UTF8);
       }
@@ -464,7 +464,7 @@ namespace TraktPluginMP2.Services
     /// <summary>
     /// Checks if a local movie is the same as an online movie
     /// </summary>
-    private bool MovieMatch(MediaItem localMovie, TraktMovie traktMovie)
+    private bool MovieMatch(MediaItem localMovie, ITraktMovie traktMovie)
     {
       // IMDb comparison
       if (!string.IsNullOrEmpty(traktMovie.Ids.Imdb) && !string.IsNullOrEmpty(MediaItemAspectsUtl.GetMovieImdbId(localMovie)))
@@ -514,7 +514,7 @@ namespace TraktPluginMP2.Services
       return string.Format("{0}_{1}_{2}", show, episode.Season, episode.Number);
     }
 
-    private TraktSyncHistoryPost GetWatchedShowsForSync(IList<MediaItem> localWatchedEpisodes, IEnumerable<EpisodeWatched> traktEpisodesWatched)
+    private ITraktSyncHistoryPost GetWatchedShowsForSync(IList<MediaItem> localWatchedEpisodes, IEnumerable<EpisodeWatched> traktEpisodesWatched)
     {
       _mediaPortalServices.GetLogger().Info("Trakt: finding local shows to add to trakt watched history");
       TraktSyncHistoryPostBuilder builder = new TraktSyncHistoryPostBuilder();
@@ -551,7 +551,7 @@ namespace TraktPluginMP2.Services
       return builder.Build();
     }
 
-    private TraktSyncCollectionPost GetCollectedShowsForSync(IList<MediaItem> localCollectedEpisodes, IEnumerable<EpisodeCollected> traktEpisodesCollected)
+    private ITraktSyncCollectionPost GetCollectedShowsForSync(IList<MediaItem> localCollectedEpisodes, IEnumerable<EpisodeCollected> traktEpisodesCollected)
     {
       _mediaPortalServices.GetLogger().Info("Trakt: finding local episodes to add to trakt collection");
       TraktSyncCollectionPostBuilder builder = new TraktSyncCollectionPostBuilder();

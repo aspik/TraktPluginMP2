@@ -11,11 +11,11 @@ using MediaPortal.UI.Presentation.Players;
 using MediaPortal.UI.Presentation.Players.ResumeState;
 using MediaPortal.UI.ServerCommunication;
 using Newtonsoft.Json;
-using TraktApiSharp.Authentication;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Get.Shows;
-using TraktApiSharp.Objects.Get.Shows.Episodes;
-using TraktApiSharp.Objects.Post.Scrobbles.Responses;
+using TraktNet.Objects.Authentication;
+using TraktNet.Objects.Get.Episodes;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Get.Shows;
+using TraktNet.Objects.Post.Scrobbles.Responses;
 using TraktPluginMP2.Notifications;
 using TraktPluginMP2.Services;
 using TraktPluginMP2.Utilities;
@@ -30,9 +30,9 @@ namespace TraktPluginMP2.Handlers
     private IAsynchronousMessageQueue _messageQueue;
     private TimeSpan _duration;
     private TimeSpan _resumePosition;
-    private TraktMovie _traktMovie;
-    private TraktEpisode _traktEpisode;
-    private TraktShow _traktShow;
+    private ITraktMovie _traktMovie;
+    private ITraktEpisode _traktEpisode;
+    private ITraktShow _traktShow;
 
     public TraktScrobbleHandlerManager(IMediaPortalServices mediaPortalServices, ITraktClient traktClient, IFileOperations fileOperations)
     {
@@ -165,7 +165,7 @@ namespace TraktPluginMP2.Handlers
       _traktEpisode = ExtractTraktEpisode(episodeMediaItem);
       _traktShow = ExtractTraktShow(episodeMediaItem);
       float progress = GetCurrentProgress(pmc);
-      TraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StartScrobbleEpisode(_traktEpisode, _traktShow, progress);
+      ITraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StartScrobbleEpisode(_traktEpisode, _traktShow, progress);
       string title = postEpisodeResponse.Episode.Title;
       int? traktProgress = null;
       if (postEpisodeResponse.Progress != null)
@@ -197,7 +197,7 @@ namespace TraktPluginMP2.Handlers
           throw new Exception("Saved authorization is not valid.");
         }
 
-        TraktAuthorization refreshedAuth = _traktClient.RefreshAuthorization(savedAuth.RefreshToken);
+        ITraktAuthorization refreshedAuth = _traktClient.RefreshAuthorization(savedAuth.RefreshToken);
         string serializedAuth = JsonConvert.SerializeObject(refreshedAuth);
         _fileOperations.FileWriteAllText(authFilePath, serializedAuth, Encoding.UTF8);
       }
@@ -216,9 +216,9 @@ namespace TraktPluginMP2.Handlers
       return cd?.SearchAsync(new MediaItemQuery(aspects, new Guid[] { }, new MediaItemIdFilter(filter)), false, null, true).Result.First();
     }
 
-    private TraktEpisode ExtractTraktEpisode(MediaItem episodeMediaItem)
+    private ITraktEpisode ExtractTraktEpisode(MediaItem episodeMediaItem)
     {
-      TraktEpisode episode = new TraktEpisode
+      ITraktEpisode episode = new TraktEpisode
       {
         Number = MediaItemAspectsUtl.GetEpisodeIndex(episodeMediaItem),
         SeasonNumber = MediaItemAspectsUtl.GetSeasonIndex(episodeMediaItem)
@@ -226,9 +226,9 @@ namespace TraktPluginMP2.Handlers
       return episode;
     }
 
-    private TraktShow ExtractTraktShow(MediaItem episodeMediaItem)
+    private ITraktShow ExtractTraktShow(MediaItem episodeMediaItem)
     {
-      TraktShow show = new TraktShow
+      ITraktShow show = new TraktShow
       {
         Ids = new TraktShowIds
         {
@@ -257,7 +257,7 @@ namespace TraktPluginMP2.Handlers
       MediaItem movieMediaItem = GetMediaItem(pc.CurrentMediaItem.MediaItemId, new Guid[] { MediaAspect.ASPECT_ID, ExternalIdentifierAspect.ASPECT_ID, MovieAspect.ASPECT_ID });
       _traktMovie = ConvertMediaItemToTraktMovie(movieMediaItem);
       float progress = GetCurrentProgress(pmc);
-      TraktMovieScrobblePostResponse postMovieResponse = _traktClient.StartScrobbleMovie(_traktMovie, progress);
+      ITraktMovieScrobblePostResponse postMovieResponse = _traktClient.StartScrobbleMovie(_traktMovie, progress);
       string title = postMovieResponse.Movie.Title;
       int? traktProgress = null;
       if (postMovieResponse.Progress != null)
@@ -276,9 +276,9 @@ namespace TraktPluginMP2.Handlers
       _mediaPortalServices.GetLogger().Info("Trakt: started to scrobble: {0}", title);
     }
 
-    private TraktMovie ConvertMediaItemToTraktMovie(MediaItem movieMediaItem)
+    private ITraktMovie ConvertMediaItemToTraktMovie(MediaItem movieMediaItem)
     {
-      TraktMovie movie = new TraktMovie
+      ITraktMovie movie = new TraktMovie
       {
         Ids = new TraktMovieIds
         {
@@ -310,7 +310,7 @@ namespace TraktPluginMP2.Handlers
           ValidateAuthorization();
 
           float progress = GetSavedProgress();
-          TraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StopScrobbleEpisode(_traktEpisode, _traktShow, progress);
+          ITraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StopScrobbleEpisode(_traktEpisode, _traktShow, progress);
           string title = postEpisodeResponse.Episode.Title;
           int? traktProgress = null;
           if (postEpisodeResponse.Progress != null)
@@ -334,7 +334,7 @@ namespace TraktPluginMP2.Handlers
           ValidateAuthorization();
 
           float progress = GetSavedProgress();
-          TraktMovieScrobblePostResponse postMovieResponse = _traktClient.StopScrobbleMovie(_traktMovie, progress);
+          ITraktMovieScrobblePostResponse postMovieResponse = _traktClient.StopScrobbleMovie(_traktMovie, progress);
           string title = postMovieResponse.Movie.Title;
           int? traktProgress = null;
           if (postMovieResponse.Progress != null)

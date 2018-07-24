@@ -8,9 +8,9 @@ using MediaPortal.Common.Threading;
 using MediaPortal.UI.Presentation.Models;
 using MediaPortal.UI.Presentation.Workflow;
 using Newtonsoft.Json;
-using TraktApiSharp.Authentication;
-using TraktApiSharp.Objects.Get.Syncs.Activities;
-using TraktApiSharp.Objects.Get.Users;
+using TraktNet.Objects.Authentication;
+using TraktNet.Objects.Get.Syncs.Activities;
+using TraktNet.Objects.Get.Users;
 using TraktPluginMP2.Exceptions;
 using TraktPluginMP2.Services;
 
@@ -116,9 +116,9 @@ namespace TraktPluginMP2.Models
     {
       try
       {
-        TraktAuthorization authorization = _traktClient.GetAuthorization(PinCode);
-        TraktUserSettings traktUserSettings = _traktClient.GetTraktUserSettings();
-        TraktSyncLastActivities traktSyncLastActivities = _traktClient.GetLastActivities();
+        ITraktAuthorization authorization = _traktClient.GetAuthorization(PinCode);
+        ITraktUserSettings traktUserSettings = _traktClient.GetTraktUserSettings();
+        ITraktSyncLastActivities traktSyncLastActivities = _traktClient.GetLastActivities();
 
         string traktUserHomePath = _mediaPortalServices.GetTraktUserHomePath();
         if (!_fileOperations.DirectoryExists(traktUserHomePath))
@@ -265,21 +265,21 @@ namespace TraktPluginMP2.Models
       get { return TRAKT_SETUP_MODEL_ID; }
     }
 
-    private void SaveTraktAuthorization(TraktAuthorization authorization, string path)
+    private void SaveTraktAuthorization(ITraktAuthorization authorization, string path)
     {
       string serializedAuthorization = JsonConvert.SerializeObject(authorization);
       string authorizationFilePath = Path.Combine(path, FileName.Authorization.Value);
       _fileOperations.FileWriteAllText(authorizationFilePath, serializedAuthorization, Encoding.UTF8);
     }
 
-    private void SaveTraktUserSettings(TraktUserSettings traktUserSettings, string path)
+    private void SaveTraktUserSettings(ITraktUserSettings traktUserSettings, string path)
     {
       string serializedSettings = JsonConvert.SerializeObject(traktUserSettings);
       string settingsFilePath = Path.Combine(path, FileName.UserSettings.Value);
       _fileOperations.FileWriteAllText(settingsFilePath, serializedSettings, Encoding.UTF8);
     }
 
-    private void SaveLastSyncActivities(TraktSyncLastActivities traktSyncLastActivities, string path)
+    private void SaveLastSyncActivities(ITraktSyncLastActivities traktSyncLastActivities, string path)
     {
       string serializedSyncActivities = JsonConvert.SerializeObject(traktSyncLastActivities, Formatting.Indented);
       string syncActivitiesFilePath = Path.Combine(path, FileName.LastActivity.Value);

@@ -4,7 +4,7 @@ using System.Linq;
 using MediaPortal.Common.MediaManagement;
 using MediaPortal.Common.MediaManagement.DefaultItemAspects;
 using MediaPortal.Common.UserProfileDataManagement;
-using TraktApiSharp.Enums;
+using TraktNet.Enums;
 
 namespace TraktPluginMP2.Utilities
 {

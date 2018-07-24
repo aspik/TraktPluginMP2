@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using NSubstitute;
 using Tests.TestData.Cache;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Syncs.Activities;
-using TraktApiSharp.Objects.Get.Watched;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Syncs.Activities;
+using TraktNet.Objects.Get.Watched;
 using TraktPluginMP2;
 using TraktPluginMP2.Services;
 using Xunit;
@@ -20,7 +20,7 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(UnWatchedMoviesTestData))]
-    public void GetUnWatchedMovies(List<TraktWatchedMovie> onlineWatchedMovies, TraktSyncLastActivities onlineLastSyncActivities, int expectedUnWatchedMoviesCount)
+    public void GetUnWatchedMovies(List<ITraktWatchedMovie> onlineWatchedMovies, ITraktSyncLastActivities onlineLastSyncActivities, int expectedUnWatchedMoviesCount)
     {
       // Arrange
       ITraktClient traktClient = Substitute.For<ITraktClient>();
@@ -35,7 +35,7 @@ namespace Tests
       IMediaPortalServices mediaPortalServices = Substitute.For<IMediaPortalServices>();
       mediaPortalServices.GetTraktUserHomePath().Returns(DataPath);
 
-      TraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
+      ITraktCache traktCache = new TraktCache(mediaPortalServices, traktClient, fileOperations);
 
       // Act
       traktCache.RefreshMoviesCache();

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using NSubstitute;
 using Tests.TestData.Setup;
-using TraktApiSharp.Authentication;
-using TraktApiSharp.Enums;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Post.Scrobbles.Responses;
+using TraktNet.Enums;
+using TraktNet.Objects.Authentication;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Post.Scrobbles.Responses;
 using TraktPluginMP2.Notifications;
 using TraktPluginMP2.Services;
 using TraktPluginMP2.Settings;
@@ -43,7 +43,7 @@ namespace Tests.TestData.Handlers
       {
         RefreshToken = "ValidToken"
       });
-      traktClient.StartScrobbleMovie(Arg.Any<TraktMovie>(), Arg.Any<float>()).Returns(
+      traktClient.StartScrobbleMovie(Arg.Any<ITraktMovie>(), Arg.Any<float>()).Returns(
         new TraktMovieScrobblePostResponse
         {
           Movie = new TraktMovie
@@ -56,7 +56,7 @@ namespace Tests.TestData.Handlers
           Action = TraktScrobbleActionType.Start
         });
 
-      traktClient.StopScrobbleMovie(Arg.Any<TraktMovie>(), Arg.Any<float>()).Returns(
+      traktClient.StopScrobbleMovie(Arg.Any<ITraktMovie>(), Arg.Any<float>()).Returns(
         new TraktMovieScrobblePostResponse
         {
           Movie = new TraktMovie

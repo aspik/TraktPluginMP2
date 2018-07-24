@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using MediaPortal.Common.MediaManagement;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Movies;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Movies;
 
 namespace Tests.TestData.Setup
 {
@@ -19,7 +19,7 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "67890", "Movie_2", 2016, 0).Movie,
           new MockedDatabaseMovie("", "0", "Movie_3", 2010, 1).Movie
         },
-        new List<TraktCollectionMovie>(),
+        new List<ITraktCollectionMovie>(),
         3
       };
       yield return new object[]
@@ -30,7 +30,7 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "16729", "Movie_2", 2016, 1).Movie,
           new MockedDatabaseMovie("", "0", "Movie_3", 2010, 2).Movie
         },
-        new List<TraktCollectionMovie>
+        new List<ITraktCollectionMovie>
         {
           new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 67890 }, Title = "Movie_1", Year = 2012}, CollectedAt = DateTime.Now},
         },
@@ -44,7 +44,7 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "16729", "Movie_2", 2008, 2).Movie,
           new MockedDatabaseMovie("", "0", "Movie_3", 2001, 3).Movie
         },
-        new List<TraktCollectionMovie>
+        new List<ITraktCollectionMovie>
         {
           new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 67890 }, Title = "Movie_1", Year = 2012}, CollectedAt = DateTime.Now},
           new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt42690", Tmdb = 16729 }, Title = "Movie_2", Year = 2008}, CollectedAt = DateTime.Now},

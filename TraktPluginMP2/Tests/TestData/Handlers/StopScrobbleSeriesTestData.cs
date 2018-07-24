@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using NSubstitute;
 using Tests.TestData.Setup;
-using TraktApiSharp.Authentication;
-using TraktApiSharp.Enums;
-using TraktApiSharp.Objects.Get.Shows;
-using TraktApiSharp.Objects.Get.Shows.Episodes;
-using TraktApiSharp.Objects.Post.Scrobbles.Responses;
+using TraktNet.Enums;
+using TraktNet.Objects.Authentication;
+using TraktNet.Objects.Get.Episodes;
+using TraktNet.Objects.Get.Shows;
+using TraktNet.Objects.Post.Scrobbles.Responses;
 using TraktPluginMP2.Notifications;
 using TraktPluginMP2.Services;
 using TraktPluginMP2.Settings;
@@ -44,7 +44,7 @@ namespace Tests.TestData.Handlers
       {
         RefreshToken = "ValidToken"
       });
-      traktClient.StartScrobbleEpisode(Arg.Any<TraktEpisode>(), Arg.Any<TraktShow>(), Arg.Any<float>()).Returns(
+      traktClient.StartScrobbleEpisode(Arg.Any<ITraktEpisode>(), Arg.Any<ITraktShow>(), Arg.Any<float>()).Returns(
         new TraktEpisodeScrobblePostResponse
         {
           Episode = new TraktEpisode
@@ -58,7 +58,7 @@ namespace Tests.TestData.Handlers
           Progress = 10
         });
 
-      traktClient.StopScrobbleEpisode(Arg.Any<TraktEpisode>(), Arg.Any<TraktShow>(), Arg.Any<float>()).Returns(
+      traktClient.StopScrobbleEpisode(Arg.Any<ITraktEpisode>(), Arg.Any<ITraktShow>(), Arg.Any<float>()).Returns(
         new TraktEpisodeScrobblePostResponse
         {
           Episode = new TraktEpisode

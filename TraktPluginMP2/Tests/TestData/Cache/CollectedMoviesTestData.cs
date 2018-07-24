@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Get.Syncs.Activities;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Get.Syncs.Activities;
 
 namespace Tests.TestData.Cache
 {
@@ -25,9 +25,9 @@ namespace Tests.TestData.Cache
       };
     }
 
-    private List<TraktCollectionMovie> GetOnlineCollectedMovies_1()
+    private List<ITraktCollectionMovie> GetOnlineCollectedMovies_1()
     {
-      return new List<TraktCollectionMovie>
+      return new List<ITraktCollectionMovie>
       {
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt0050083"}}},
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt2179136"}}},
@@ -36,9 +36,9 @@ namespace Tests.TestData.Cache
       };
     }
 
-    private List<TraktCollectionMovie> GetOnlineCollectedMovies_2()
+    private List<ITraktCollectionMovie> GetOnlineCollectedMovies_2()
     {
-      return new List<TraktCollectionMovie>
+      return new List<ITraktCollectionMovie>
       {
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt0050083"}}},
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt2179136"}}},

@@ -1,6 +1,6 @@
 ﻿using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using TraktApiSharp.Exceptions;
+using TraktNet.Exceptions;
 using TraktPluginMP2;
 using TraktPluginMP2.Models;
 using TraktPluginMP2.Services;

@@ -5,15 +5,15 @@ using MediaPortal.Common.MediaManagement.MLQueries;
 using MediaPortal.Common.SystemCommunication;
 using NSubstitute;
 using Tests.TestData.Setup;
-using TraktApiSharp.Authentication;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Get.Watched;
-using TraktApiSharp.Objects.Post.Syncs.Collection;
-using TraktApiSharp.Objects.Post.Syncs.Collection.Responses;
-using TraktApiSharp.Objects.Post.Syncs.History;
-using TraktApiSharp.Objects.Post.Syncs.History.Responses;
-using TraktApiSharp.Objects.Post.Syncs.Responses;
+using TraktNet.Objects.Authentication;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Get.Watched;
+using TraktNet.Objects.Post.Syncs.Collection;
+using TraktNet.Objects.Post.Syncs.Collection.Responses;
+using TraktNet.Objects.Post.Syncs.History;
+using TraktNet.Objects.Post.Syncs.History.Responses;
+using TraktNet.Objects.Post.Syncs.Responses;
 using TraktPluginMP2;
 using TraktPluginMP2.Models;
 using TraktPluginMP2.Services;
@@ -26,15 +26,15 @@ namespace Tests
   {
     [Theory]
     [ClassData(typeof(WatchedMoviesTestData))]
-    public void AddWatchedMovieToTraktIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<TraktWatchedMovie> traktMovies, int? expectedMoviesCount)
+    public void AddWatchedMovieToTraktIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<ITraktWatchedMovie> traktMovies, int? expectedMoviesCount)
     {
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseMovies);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(
         new TraktSyncHistoryPostResponse {Added = new TraktSyncPostResponseGroup {Movies = expectedMoviesCount}});
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
@@ -51,16 +51,16 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(CollectedMoviesTestData))]
-    public void AddCollectedMovieToTraktIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<TraktCollectionMovie> traktMovies, int? expectedMoviesCount)
+    public void AddCollectedMovieToTraktIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<ITraktCollectionMovie> traktMovies, int? expectedMoviesCount)
     {
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseMovies);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(
         new TraktSyncCollectionPostResponse { Added = new TraktSyncPostResponseGroup { Movies = expectedMoviesCount } });
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(
         new TraktSyncHistoryPostResponse());
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
@@ -77,14 +77,14 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(TraktUnwatchedMoviesTestData))]
-    public void MarkMovieAsUnwatchedIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<TraktMovie> traktMovies, int expectedMoviesCount)
+    public void MarkMovieAsUnwatchedIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<ITraktMovie> traktMovies, int expectedMoviesCount)
     {
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseMovies);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
@@ -101,14 +101,14 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(TraktWatchedMoviesTestData))]
-    public void MarkMovieAsWatchedIfMediaLibraryAndCacheAvailable(List<MediaItem> databaseMovies, List<TraktWatchedMovie> traktMovies, int expectedMoviesCount)
+    public void MarkMovieAsWatchedIfMediaLibraryAndCacheAvailable(List<MediaItem> databaseMovies, List<ITraktWatchedMovie> traktMovies, int expectedMoviesCount)
     {
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseMovies);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
@@ -130,10 +130,10 @@ namespace Tests
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseEpisodes);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(
         new TraktSyncCollectionPostResponse {Added = new TraktSyncPostResponseGroup {Episodes = expectedEpisodesCount} });
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
@@ -155,10 +155,10 @@ namespace Tests
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseEpisodes);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(
         new TraktSyncHistoryPostResponse { Added = new TraktSyncPostResponseGroup { Episodes = expectedEpisodesCount } });
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
@@ -180,9 +180,9 @@ namespace Tests
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseEpisodes);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
@@ -204,9 +204,9 @@ namespace Tests
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseEpisodes);
       ITraktClient traktClient = Substitute.For<ITraktClient>();
-      traktClient.AddCollectionItems(Arg.Any<TraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
-      traktClient.AddWatchedHistoryItems(Arg.Any<TraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
-      TraktAuthorization authorization = Substitute.For<TraktAuthorization>();
+      traktClient.AddCollectionItems(Arg.Any<ITraktSyncCollectionPost>()).Returns(new TraktSyncCollectionPostResponse());
+      traktClient.AddWatchedHistoryItems(Arg.Any<ITraktSyncHistoryPost>()).Returns(new TraktSyncHistoryPostResponse());
+      ITraktAuthorization authorization = Substitute.For<ITraktAuthorization>();
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();

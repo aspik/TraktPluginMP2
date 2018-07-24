@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using TraktApiSharp.Objects.Get.Collection;
-using TraktApiSharp.Objects.Get.Movies;
-using TraktApiSharp.Objects.Get.Watched;
+using TraktNet.Objects.Get.Collections;
+using TraktNet.Objects.Get.Movies;
+using TraktNet.Objects.Get.Watched;
 using TraktPluginMP2.Structures;
 
 namespace TraktPluginMP2.Services
@@ -10,9 +10,9 @@ namespace TraktPluginMP2.Services
   {
     void RefreshMoviesCache();
     void RefreshSeriesCache();
-    IEnumerable<TraktMovie> UnWatchedMovies { get; } 
-    IEnumerable<TraktWatchedMovie> WatchedMovies { get; } 
-    IEnumerable<TraktCollectionMovie> CollectedMovies { get; }
+    IEnumerable<ITraktMovie> UnWatchedMovies { get; } 
+    IEnumerable<ITraktWatchedMovie> WatchedMovies { get; } 
+    IEnumerable<ITraktCollectionMovie> CollectedMovies { get; }
     IEnumerable<Episode> UnWatchedEpisodes { get; } 
     IEnumerable<EpisodeWatched> WatchedEpisodes { get; } 
     IEnumerable<EpisodeCollected> CollectedEpisodes { get; }

@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using TraktNet.Objects.Authentication;
 using TraktNet.Objects.Get.Syncs.Activities;
 using TraktNet.Objects.Get.Users;
+using TraktNet.Services;
 using TraktPluginMP2.Exceptions;
 using TraktPluginMP2.Services;
 
@@ -267,21 +268,21 @@ namespace TraktPluginMP2.Models
 
     private void SaveTraktAuthorization(ITraktAuthorization authorization, string path)
     {
-      string serializedAuthorization = JsonConvert.SerializeObject(authorization);
+      string serializedAuthorization = TraktSerializationService.SerializeAsync(authorization).Result;
       string authorizationFilePath = Path.Combine(path, FileName.Authorization.Value);
       _fileOperations.FileWriteAllText(authorizationFilePath, serializedAuthorization, Encoding.UTF8);
     }
 
     private void SaveTraktUserSettings(ITraktUserSettings traktUserSettings, string path)
     {
-      string serializedSettings = JsonConvert.SerializeObject(traktUserSettings);
+      string serializedSettings = TraktSerializationService.SerializeAsync(traktUserSettings).Result;
       string settingsFilePath = Path.Combine(path, FileName.UserSettings.Value);
       _fileOperations.FileWriteAllText(settingsFilePath, serializedSettings, Encoding.UTF8);
     }
 
     private void SaveLastSyncActivities(ITraktSyncLastActivities traktSyncLastActivities, string path)
     {
-      string serializedSyncActivities = JsonConvert.SerializeObject(traktSyncLastActivities, Formatting.Indented);
+      string serializedSyncActivities = TraktSerializationService.SerializeAsync(traktSyncLastActivities).Result;
       string syncActivitiesFilePath = Path.Combine(path, FileName.LastActivity.Value);
       _fileOperations.FileWriteAllText(syncActivitiesFilePath, serializedSyncActivities, Encoding.UTF8);
     }

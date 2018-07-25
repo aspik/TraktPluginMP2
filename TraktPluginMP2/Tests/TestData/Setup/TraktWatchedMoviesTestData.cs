@@ -14,9 +14,9 @@ namespace Tests.TestData.Setup
       {
         new List<MediaItem>
         {
-          new MockedDatabaseMovie("tt1450", "67890", "Movie_1", 2012, 1).Movie,
-          new MockedDatabaseMovie("", "50123", "Movie_2", 2016, 1).Movie,
-          new MockedDatabaseMovie("", "0", "Movie_4", 2014, 1).Movie
+          new MockedDatabaseMovie("tt1450", "67890", "Movie_1", 2012, 100).Movie,
+          new MockedDatabaseMovie("", "50123", "Movie_2", 2016, 100).Movie,
+          new MockedDatabaseMovie("", "0", "Movie_4", 2014, 100).Movie
         },
         new List<ITraktWatchedMovie>
         {

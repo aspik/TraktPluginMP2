@@ -13,9 +13,9 @@ namespace Tests.TestData.Setup
       {
         new List<MediaItem>
         {
-          new MockedDatabaseEpisode("289590", 2, new List<int> {6}, 1).Episode,
+          new MockedDatabaseEpisode("289590", 2, new List<int> {6}, 100).Episode,
           new MockedDatabaseEpisode("318493", 1, new List<int> {2}, 0).Episode,
-          new MockedDatabaseEpisode("998201", 4, new List<int> {1}, 1).Episode
+          new MockedDatabaseEpisode("998201", 4, new List<int> {1}, 100).Episode
         },
         new List<EpisodeCollected>
         {
@@ -29,9 +29,9 @@ namespace Tests.TestData.Setup
       {
         new List<MediaItem>
         {
-          new MockedDatabaseEpisode("289590", 2, new List<int> {6}, 1).Episode,
+          new MockedDatabaseEpisode("289590", 2, new List<int> {6}, 100).Episode,
           new MockedDatabaseEpisode("318493", 1, new List<int> {2}, 0).Episode,
-          new MockedDatabaseEpisode("998201", 4, new List<int> {1}, 1).Episode
+          new MockedDatabaseEpisode("998201", 4, new List<int> {1}, 100).Episode
         },
         new List<EpisodeCollected>(),
         3

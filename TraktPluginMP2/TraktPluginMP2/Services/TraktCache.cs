@@ -8,6 +8,7 @@ using TraktNet.Objects.Get.Collections;
 using TraktNet.Objects.Get.Movies;
 using TraktNet.Objects.Get.Syncs.Activities;
 using TraktNet.Objects.Get.Watched;
+using TraktNet.Services;
 using TraktPluginMP2.Structures;
 
 namespace TraktPluginMP2.Services
@@ -181,7 +182,7 @@ namespace TraktPluginMP2.Services
               ShowTitle = show.Show.Title,
               ShowYear = show.Show.Year,
               Number = episode.Number,
-             // Plays = episode.Plays,
+            //  Plays = episode.Plays,
              // WatchedAt = episode.LastWatchedAt
             });
           }
@@ -237,7 +238,7 @@ namespace TraktPluginMP2.Services
       return episodesCollected;
     }
 
-    private TraktSyncLastActivities SavedLastSyncActivities()
+    private ITraktSyncLastActivities SavedLastSyncActivities()
     {
       string traktUserHomePath = _mediaPortalServices.GetTraktUserHomePath();
       string savedSyncActivitiesFilePath = Path.Combine(traktUserHomePath, FileName.LastActivity.Value);
@@ -246,8 +247,7 @@ namespace TraktPluginMP2.Services
         throw new Exception("Last sync activities file could not be found in: " + traktUserHomePath);
       }
       string savedSyncActivitiesJson = _fileOperations.FileReadAllText(savedSyncActivitiesFilePath);
-
-      return JsonConvert.DeserializeObject<TraktSyncLastActivities>(savedSyncActivitiesJson);
+      return TraktSerializationService.DeserializeAsync<ITraktSyncLastActivities>(savedSyncActivitiesJson).Result;
     }
 
     private IEnumerable<ITraktWatchedMovie> CachedWatchedMovies()
@@ -258,7 +258,7 @@ namespace TraktPluginMP2.Services
       if (_fileOperations.FileExists(watchedMoviesPath))
       {
         string watchedMoviesJson = _fileOperations.FileReadAllText(watchedMoviesPath);
-        watchedMovies = JsonConvert.DeserializeObject<List<ITraktWatchedMovie>>(watchedMoviesJson);
+        watchedMovies = TraktSerializationService.DeserializeCollectionAsync<ITraktWatchedMovie>(watchedMoviesJson).Result;
       }
       return watchedMovies;
     }
@@ -271,7 +271,7 @@ namespace TraktPluginMP2.Services
       if (_fileOperations.FileExists(collectedMoviesPath))
       {
         string collectedMoviesJson = _fileOperations.FileReadAllText(collectedMoviesPath);
-        collectedMovies = JsonConvert.DeserializeObject<List<ITraktCollectionMovie>>(collectedMoviesJson);
+        collectedMovies = TraktSerializationService.DeserializeCollectionAsync<ITraktCollectionMovie>(collectedMoviesJson).Result;
       }
       return collectedMovies;
     }
@@ -305,21 +305,21 @@ namespace TraktPluginMP2.Services
     private void SaveLastSyncActivities(ITraktSyncLastActivities syncLastActivities)
     {
       string lastSyncActivitiesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.LastActivity.Value);
-      string lastSyncActivitiesJson = JsonConvert.SerializeObject(syncLastActivities);
+      string lastSyncActivitiesJson = TraktSerializationService.SerializeAsync(syncLastActivities).Result;
       _fileOperations.FileWriteAllText(lastSyncActivitiesPath, lastSyncActivitiesJson, Encoding.UTF8);
     }
 
     private void SaveWatchedMovies(IEnumerable<ITraktWatchedMovie> watchedMovies)
     {
       string watchedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.WatchedMovies.Value);
-      string watchedMoviesJson = JsonConvert.SerializeObject(watchedMovies);
+      string watchedMoviesJson = TraktSerializationService.SerializeCollectionAsync(watchedMovies).Result;
       _fileOperations.FileWriteAllText(watchedMoviesPath, watchedMoviesJson, Encoding.UTF8);
     }
 
     private void SaveCollectedMovies(IEnumerable<ITraktCollectionMovie> collectedMovies)
     {
       string collectedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.CollectedMovies.Value);
-      string collectedMoviesJson = JsonConvert.SerializeObject(collectedMovies);
+      string collectedMoviesJson = TraktSerializationService.SerializeCollectionAsync(collectedMovies).Result;
       _fileOperations.FileWriteAllText(collectedMoviesPath, collectedMoviesJson, Encoding.UTF8);
     }
 

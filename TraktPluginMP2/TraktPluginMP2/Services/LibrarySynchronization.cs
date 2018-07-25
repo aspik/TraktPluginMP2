@@ -14,12 +14,14 @@ using TraktNet.Objects.Basic;
 using TraktNet.Objects.Get.Collections;
 using TraktNet.Objects.Get.Movies;
 using TraktNet.Objects.Get.Shows;
+using TraktNet.Objects.Get.Syncs.Activities;
 using TraktNet.Objects.Get.Watched;
 using TraktNet.Objects.Post;
 using TraktNet.Objects.Post.Syncs.Collection;
 using TraktNet.Objects.Post.Syncs.Collection.Responses;
 using TraktNet.Objects.Post.Syncs.History;
 using TraktNet.Objects.Post.Syncs.History.Responses;
+using TraktNet.Services;
 using TraktPluginMP2.Exceptions;
 using TraktPluginMP2.Structures;
 using TraktPluginMP2.Utilities;
@@ -448,7 +450,7 @@ namespace TraktPluginMP2.Services
       {
         string authFilePath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.Authorization.Value);
         string savedAuthorization = _fileOperations.FileReadAllText(authFilePath);
-        TraktAuthorization savedAuth = JsonConvert.DeserializeObject<TraktAuthorization>(savedAuthorization);
+        ITraktAuthorization savedAuth = TraktSerializationService.DeserializeAsync<ITraktAuthorization>(savedAuthorization).Result;
 
         if (!savedAuth.IsRefreshPossible)
         {
@@ -466,20 +468,28 @@ namespace TraktPluginMP2.Services
     /// </summary>
     private bool MovieMatch(MediaItem localMovie, ITraktMovie traktMovie)
     {
+      bool result = false;
       // IMDb comparison
       if (!string.IsNullOrEmpty(traktMovie.Ids.Imdb) && !string.IsNullOrEmpty(MediaItemAspectsUtl.GetMovieImdbId(localMovie)))
       {
-        return String.Compare(MediaItemAspectsUtl.GetMovieImdbId(localMovie), traktMovie.Ids.Imdb, StringComparison.OrdinalIgnoreCase) == 0;
+        result = String.Compare(MediaItemAspectsUtl.GetMovieImdbId(localMovie), traktMovie.Ids.Imdb, StringComparison.OrdinalIgnoreCase) == 0;
       }
 
       // TMDb comparison
-      if ((MediaItemAspectsUtl.GetMovieTmdbId(localMovie) != 0) && traktMovie.Ids.Tmdb.HasValue)
+      else if ((MediaItemAspectsUtl.GetMovieTmdbId(localMovie) != 0) && traktMovie.Ids.Tmdb.HasValue)
       {
-        return MediaItemAspectsUtl.GetMovieTmdbId(localMovie) == traktMovie.Ids.Tmdb.Value;
+        result= MediaItemAspectsUtl.GetMovieTmdbId(localMovie) == traktMovie.Ids.Tmdb.Value;
       }
 
       // Title & Year comparison
-      return String.Compare(MediaItemAspectsUtl.GetMovieTitle(localMovie), traktMovie.Title, StringComparison.OrdinalIgnoreCase) == 0 && (MediaItemAspectsUtl.GetMovieYear(localMovie) == traktMovie.Year);
+      else if (String.Compare(MediaItemAspectsUtl.GetMovieTitle(localMovie), traktMovie.Title,
+                 StringComparison.OrdinalIgnoreCase) == 0 &&
+               (MediaItemAspectsUtl.GetMovieYear(localMovie) == traktMovie.Year))
+      {
+        result = true;
+      }
+
+      return result;
     }
 
     private string CreateLookupKey(MediaItem episode)

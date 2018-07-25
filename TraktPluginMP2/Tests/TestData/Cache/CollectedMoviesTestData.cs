@@ -25,9 +25,9 @@ namespace Tests.TestData.Cache
       };
     }
 
-    private List<ITraktCollectionMovie> GetOnlineCollectedMovies_1()
+    private List<TraktCollectionMovie> GetOnlineCollectedMovies_1()
     {
-      return new List<ITraktCollectionMovie>
+      return new List<TraktCollectionMovie>
       {
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt0050083"}}},
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt2179136"}}},
@@ -36,9 +36,9 @@ namespace Tests.TestData.Cache
       };
     }
 
-    private List<ITraktCollectionMovie> GetOnlineCollectedMovies_2()
+    private List<TraktCollectionMovie> GetOnlineCollectedMovies_2()
     {
-      return new List<ITraktCollectionMovie>
+      return new List<TraktCollectionMovie>
       {
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt0050083"}}},
         new TraktCollectionMovie {Movie = new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt2179136"}}},

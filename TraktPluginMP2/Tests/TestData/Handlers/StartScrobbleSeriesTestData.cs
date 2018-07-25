@@ -25,7 +25,7 @@ namespace Tests.TestData.Handlers
           IsScrobbleEnabled = true,
           ShowScrobbleStartedNotifications = true
         },
-        new MockedDatabaseEpisode("289590", 2, new List<int> {6}, 1).Episode,
+        new MockedDatabaseEpisode("289590", 2, new List<int> {6}, 100).Episode,
         GetMockedTraktClientWithValidAuthorization(),
         new TraktScrobbleStartedNotification(title, true, 10, "Start")
       };

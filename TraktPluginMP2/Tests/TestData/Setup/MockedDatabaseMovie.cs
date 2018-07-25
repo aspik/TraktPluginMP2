@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using MediaPortal.Common.MediaManagement;
 using MediaPortal.Common.MediaManagement.DefaultItemAspects;
+using MediaPortal.Common.UserProfileDataManagement;
 using TraktPluginMP2.Structures;
 
 namespace Tests.TestData.Setup
@@ -10,7 +12,7 @@ namespace Tests.TestData.Setup
   {
     public MediaItem Movie { get; }
 
-    public MockedDatabaseMovie(string imdbId, string tmdbId, string title, int year, int playCount)
+    public MockedDatabaseMovie(string imdbId, string tmdbId, string title, int year, int playPercentage)
     {
       IDictionary<Guid, IList<MediaItemAspect>> movieAspects = new Dictionary<Guid, IList<MediaItemAspect>>();
       MultipleMediaItemAspect resourceAspect = new MultipleMediaItemAspect(ProviderResourceAspect.Metadata);
@@ -20,10 +22,11 @@ namespace Tests.TestData.Setup
       MediaItemAspect.AddOrUpdateExternalIdentifier(movieAspects, ExternalIdentifierAspect.SOURCE_TMDB, ExternalIdentifierAspect.TYPE_MOVIE, tmdbId);
       MediaItemAspect.SetAttribute(movieAspects, MovieAspect.ATTR_MOVIE_NAME, title);
       SingleMediaItemAspect smia = new SingleMediaItemAspect(MediaAspect.Metadata);
-      smia.SetAttribute(MediaAspect.ATTR_PLAYCOUNT, playCount);
       smia.SetAttribute(MediaAspect.ATTR_RECORDINGTIME, new DateTime(year, 1, 1));
-
-      Movie = new MediaItem(Guid.NewGuid(), movieAspects);
+      MediaItemAspect.SetAspect(movieAspects, smia);
+      IDictionary<string, string> userData = new Dictionary<string, string>();
+      userData.Add(UserDataKeysKnown.KEY_PLAY_PERCENTAGE, playPercentage.ToString());
+      Movie = new MediaItem(Guid.NewGuid(), movieAspects, userData);
     }
 
     public MockedDatabaseMovie(MediaLibraryMovie movie)

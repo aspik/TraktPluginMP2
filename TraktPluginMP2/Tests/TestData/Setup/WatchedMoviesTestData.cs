@@ -14,9 +14,9 @@ namespace Tests.TestData.Setup
       {
         new List<MediaItem>
         {
-          new MockedDatabaseMovie("tt12345", "67890", "Movie_1", 2012, 1).Movie,
-          new MockedDatabaseMovie("", "16729", "Movie_2", 2016, 2).Movie,
-          new MockedDatabaseMovie("", "0", "Movie_3", 2011, 3).Movie
+          new MockedDatabaseMovie("tt12345", "67890", "Movie_1", 2012, 100).Movie,
+          new MockedDatabaseMovie("", "16729", "Movie_2", 2016, 100).Movie,
+          new MockedDatabaseMovie("", "0", "Movie_3", 2011, 100).Movie
         },
         new List<ITraktWatchedMovie>
         {
@@ -30,9 +30,9 @@ namespace Tests.TestData.Setup
       {
         new List<MediaItem>
         {
-          new MockedDatabaseMovie("tt12345", "67890", "Movie_1", 2012, 1).Movie,
-          new MockedDatabaseMovie("", "16729", "Movie_2", 2016, 2).Movie,
-          new MockedDatabaseMovie("", "0", "Movie_3", 2011, 3).Movie
+          new MockedDatabaseMovie("tt12345", "67890", "Movie_1", 2012, 100).Movie,
+          new MockedDatabaseMovie("", "16729", "Movie_2", 2016, 100).Movie,
+          new MockedDatabaseMovie("", "0", "Movie_3", 2011, 100).Movie
         },
         new List<ITraktWatchedMovie>
         {
@@ -45,9 +45,9 @@ namespace Tests.TestData.Setup
       {
         new List<MediaItem>
         {
-          new MockedDatabaseMovie("tt12345", "67890", "Movie_1", 2012, 1).Movie,
-          new MockedDatabaseMovie("", "67890", "Movie_2", 2016, 2).Movie,
-          new MockedDatabaseMovie("", "0", "Movie_3", 2010, 3).Movie
+          new MockedDatabaseMovie("tt12345", "67890", "Movie_1", 2012, 100).Movie,
+          new MockedDatabaseMovie("", "67890", "Movie_2", 2016, 100).Movie,
+          new MockedDatabaseMovie("", "0", "Movie_3", 2010, 100).Movie
         },
         new List<ITraktWatchedMovie>(),
         3

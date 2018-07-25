@@ -14,7 +14,7 @@
 
   <Runtime>
     <Assembly FileName="TraktPluginMP2.dll"/>
-    <Assembly FileName="TraktApiSharp.dll"/>
+    <Assembly FileName="Trakt.NET.dll"/>
   </Runtime>
 
   <DependsOn>

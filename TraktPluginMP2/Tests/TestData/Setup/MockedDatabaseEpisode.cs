@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MediaPortal.Common.MediaManagement;
 using MediaPortal.Common.MediaManagement.DefaultItemAspects;
+using MediaPortal.Common.UserProfileDataManagement;
 
 namespace Tests.TestData.Setup
 {
@@ -9,7 +10,7 @@ namespace Tests.TestData.Setup
   {
     public MediaItem Episode { get; }
 
-    public MockedDatabaseEpisode(string tvDbId, int seasonIndex, List<int> episodeIndex, int playCount)
+    public MockedDatabaseEpisode(string tvDbId, int seasonIndex, List<int> episodeIndex, int playPercentage)
     {
       IDictionary<Guid, IList<MediaItemAspect>> episodeAspects = new Dictionary<Guid, IList<MediaItemAspect>>();
       MultipleMediaItemAspect resourceAspect = new MultipleMediaItemAspect(ProviderResourceAspect.Metadata);
@@ -19,10 +20,11 @@ namespace Tests.TestData.Setup
       MediaItemAspect.SetAttribute(episodeAspects, EpisodeAspect.ATTR_SEASON, seasonIndex);
       MediaItemAspect.SetCollectionAttribute(episodeAspects, EpisodeAspect.ATTR_EPISODE, episodeIndex);
       SingleMediaItemAspect smia = new SingleMediaItemAspect(MediaAspect.Metadata);
-      smia.SetAttribute(MediaAspect.ATTR_PLAYCOUNT, playCount);
       MediaItemAspect.SetAspect(episodeAspects, smia);
+      IDictionary<string, string> userData = new Dictionary<string, string>();
+      userData.Add(UserDataKeysKnown.KEY_PLAY_PERCENTAGE, playPercentage.ToString());
 
-      Episode = new MediaItem(Guid.NewGuid(), episodeAspects);
+      Episode = new MediaItem(Guid.NewGuid(), episodeAspects, userData);
     }
   }
 }

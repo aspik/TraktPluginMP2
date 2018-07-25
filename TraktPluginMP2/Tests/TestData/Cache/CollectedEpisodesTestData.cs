@@ -27,9 +27,9 @@ namespace Tests.TestData.Cache
       };
     }
 
-    private List<ITraktCollectionShow> GetOnlineCollectedEpisodes_1()
+    private List<TraktCollectionShow> GetOnlineCollectedEpisodes_1()
     {
-      return new List<ITraktCollectionShow>
+      return new List<TraktCollectionShow>
       {
         new TraktCollectionShow
         {
@@ -37,12 +37,12 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 80379, Imdb = "tt0898266"}
           },
-          Seasons = new List<ITraktSeason>
+          Seasons = new List<TraktSeason>
           {
             new TraktSeason()
             {
               Number = 9,
-              Episodes = new List<ITraktEpisode>
+              Episodes = new List<TraktEpisode>
               {
                 new TraktEpisode() {Number = 1}
               }
@@ -55,12 +55,12 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 248682, Imdb = "tt1826940"}
           },
-          Seasons = new List<ITraktSeason>
+          Seasons = new List<TraktSeason>
           {
             new TraktSeason
             {
               Number = 1,
-              Episodes = new List<ITraktEpisode>
+              Episodes = new List<TraktEpisode>
               {
                 new TraktEpisode {Number = 3}
               }
@@ -98,12 +98,12 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 80379, Imdb = "tt0898266"}
           },
-          Seasons = new List<ITraktSeason>
+          Seasons = new List<TraktSeason>
           {
             new TraktSeason
             {
               Number = 9,
-              Episodes = new List<ITraktEpisode>
+              Episodes = new List<TraktEpisode>
               {
                 new TraktEpisode {Number = 1},
                 new TraktEpisode {Number = 2}
@@ -117,12 +117,12 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 248682, Imdb = "tt1826940"}
           },
-          Seasons = new List<ITraktSeason>
+          Seasons = new List<TraktSeason>
           {
             new TraktSeason
             {
               Number = 1,
-              Episodes = new List<ITraktEpisode>
+              Episodes = new List<TraktEpisode>
               {
                 new TraktEpisode {Number = 3}
               }
@@ -135,12 +135,12 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 298901, Imdb = "tt4635276"}
           },
-          Seasons = new List<ITraktSeason>
+          Seasons = new List<TraktSeason>
           {
             new TraktSeason
             {
               Number = 1,
-              Episodes = new List<ITraktEpisode>
+              Episodes = new List<TraktEpisode>
               {
                 new TraktEpisode {Number = 1},
                 new TraktEpisode {Number = 2},

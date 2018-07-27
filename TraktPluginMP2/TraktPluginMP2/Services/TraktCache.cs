@@ -123,7 +123,7 @@ namespace TraktPluginMP2.Services
       // convert to internal data structure
       foreach (var show in currentWatchedShows)
       {
-        foreach (var season in show.Seasons)
+        foreach (var season in show.WatchedSeasons)
         {
           foreach (var episode in season.Episodes)
           {
@@ -136,8 +136,8 @@ namespace TraktPluginMP2.Services
               ShowYear = show.Show.Year,
               Season = season.Number,
               Number = episode.Number,
-             // Plays = episode.Plays,
-             // WatchedAt = episode.LastWatchedAt
+              Plays = episode.Plays,
+              WatchedAt = episode.LastWatchedAt
             });
           }
         }
@@ -170,7 +170,7 @@ namespace TraktPluginMP2.Services
       // convert to internal data structure
       foreach (var show in watchedShows)
       {
-        foreach (var season in show.Seasons)
+        foreach (var season in show.WatchedSeasons)
         {
           foreach (var episode in season.Episodes)
           {
@@ -182,8 +182,9 @@ namespace TraktPluginMP2.Services
               ShowTitle = show.Show.Title,
               ShowYear = show.Show.Year,
               Number = episode.Number,
-            //  Plays = episode.Plays,
-             // WatchedAt = episode.LastWatchedAt
+              Season = season.Number,
+              Plays = episode.Plays,
+              WatchedAt = episode.LastWatchedAt
             });
           }
         }
@@ -215,7 +216,7 @@ namespace TraktPluginMP2.Services
       // convert to internal data structure
       foreach (var show in collectedShows)
       {
-        foreach (var season in show.Seasons)
+        foreach (var season in show.CollectionSeasons)
         {
           foreach (var episode in season.Episodes)
           {
@@ -228,7 +229,7 @@ namespace TraktPluginMP2.Services
               ShowYear = show.Show.Year,
               Number = episode.Number,
               Season = season.Number,
-              //CollectedAt = episode.CollectedAt
+              CollectedAt = episode.CollectedAt
             });
           }
         }

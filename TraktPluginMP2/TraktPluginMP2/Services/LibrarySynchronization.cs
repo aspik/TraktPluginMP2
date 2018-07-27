@@ -194,14 +194,13 @@ namespace TraktPluginMP2.Services
                                                                 where !traktCollectedMovies.ToList().Exists(c => MovieMatch(movie, c.Movie))
                                                                 select new TraktSyncCollectionPostMovie
                                                                 {
-                                                                  Metadata = new TraktMetadata
-                                                                  {
+                                         
                                                                     MediaType = MediaItemAspectsUtl.GetVideoMediaType(movie),
                                                                     MediaResolution = MediaItemAspectsUtl.GetVideoResolution(movie),
                                                                     Audio = MediaItemAspectsUtl.GetVideoAudioCodec(movie),
                                                                     AudioChannels = MediaItemAspectsUtl.GetVideoAudioChannel(movie),
-                                                                    ThreeDimensional = false
-                                                                  },
+                                                                    ThreeDimensional = false,
+                                
                                                                   Ids = new TraktMovieIds
                                                                   {
                                                                     Imdb = MediaItemAspectsUtl.GetMovieImdbId(movie),
@@ -218,10 +217,10 @@ namespace TraktPluginMP2.Services
 
         foreach (var traktSyncCollectionPostMovie in syncCollectedMovies)
         {
-          string audio = traktSyncCollectionPostMovie.Metadata.Audio?.DisplayName;
-          string channel = traktSyncCollectionPostMovie.Metadata.AudioChannels?.DisplayName;
-          string res = traktSyncCollectionPostMovie.Metadata.MediaResolution?.DisplayName;
-          string mediatype = traktSyncCollectionPostMovie.Metadata.MediaType?.DisplayName;
+          string audio = traktSyncCollectionPostMovie.Audio?.DisplayName;
+          string channel = traktSyncCollectionPostMovie.AudioChannels?.DisplayName;
+          string res = traktSyncCollectionPostMovie.MediaResolution?.DisplayName;
+          string mediatype = traktSyncCollectionPostMovie.MediaType?.DisplayName;
           string name = traktSyncCollectionPostMovie.Title;
           _mediaPortalServices.GetLogger().Info("Trakt: {0}, {1}, {2}, {3}, {4}", audio, channel, res, mediatype, name);
         }
@@ -458,7 +457,7 @@ namespace TraktPluginMP2.Services
         }
 
         ITraktAuthorization refreshedAuth = _traktClient.RefreshAuthorization(savedAuth.RefreshToken);
-        string serializedAuth = JsonConvert.SerializeObject(refreshedAuth);
+        string serializedAuth = TraktSerializationService.SerializeAsync(refreshedAuth).Result;
         _fileOperations.FileWriteAllText(authFilePath, serializedAuth, Encoding.UTF8);
       }
     }
@@ -549,11 +548,14 @@ namespace TraktPluginMP2.Services
 
           DateTime watchedAt = MediaItemAspectsUtl.GetLastPlayedDate(episode);
 
-          builder.AddShow(show, watchedAt, new PostHistorySeasons
+          builder.AddShow(show, new PostHistorySeasons
           {
             {
               MediaItemAspectsUtl.GetSeasonIndex(episode),
-              new PostHistoryEpisodes {MediaItemAspectsUtl.GetEpisodeIndex(episode)}
+              new PostHistoryEpisodes
+              {
+                {MediaItemAspectsUtl.GetEpisodeIndex(episode), watchedAt} 
+              }
             }
           });
         }

@@ -217,7 +217,7 @@ namespace TraktPluginMP2.Models
       else
       {
         string savedAuthorization = _fileOperations.FileReadAllText(authFilePath);
-        TraktAuthorization savedAuthFile = JsonConvert.DeserializeObject<TraktAuthorization>(savedAuthorization);
+        ITraktAuthorization savedAuthFile = TraktSerializationService.DeserializeAsync<ITraktAuthorization>(savedAuthorization).Result;
         if (savedAuthFile.IsRefreshPossible)
         {
           TestStatus = "[Trakt.AlreadyAuthorized]";

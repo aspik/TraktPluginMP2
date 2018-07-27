@@ -67,7 +67,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Trakt.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Trakt.NET.1.0.0-alpha3\lib\netstandard1.1\Trakt.NET.dll</HintPath>
+      <HintPath>..\packages\Trakt.NET.1.0.0-develop-64\lib\netstandard1.1\Trakt.NET.dll</HintPath>
     </Reference>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.abstractions.2.0.1\lib\net35\xunit.abstractions.dll</HintPath>

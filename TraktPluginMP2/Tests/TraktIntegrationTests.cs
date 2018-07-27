@@ -17,13 +17,14 @@ using TraktNet.Objects.Post.Syncs.Collection;
 using TraktNet.Objects.Post.Syncs.Collection.Responses;
 using TraktNet.Objects.Post.Syncs.History;
 using TraktNet.Objects.Post.Syncs.History.Responses;
+using TraktNet.Services;
 using TraktPluginMP2;
 using TraktPluginMP2.Services;
 using TraktPluginMP2.Structures;
 using Xunit;
 
 namespace Tests
-{/*
+{
   public class TraktIntegrationTests
   {
     const string ApplicationId = "aea41e88de3cd0f8c8b2404d84d2e5d7317789e67fad223eba107aea2ef59068";
@@ -128,7 +129,7 @@ namespace Tests
       {
         collectionPostMovies.Add(new TraktSyncCollectionPostMovie
         {
-          Metadata = traktCollectionMovie.Metadata,
+         // Metadata = traktCollectionMovie.Metadata,
           Ids = traktCollectionMovie.Movie.Ids,
           Year = traktCollectionMovie.Movie.Year,
           Title = traktCollectionMovie.Movie.Title
@@ -220,7 +221,7 @@ namespace Tests
       {
         string authFilePath = Path.Combine(HomeUserPath, FileName.Authorization.Value);
         string savedAuthorization = _fileOperations.FileReadAllText(authFilePath);
-        ITraktAuthorization savedAuth = JsonConvert.DeserializeObject<ITraktAuthorization>(savedAuthorization);
+        ITraktAuthorization savedAuth = TraktSerializationService.DeserializeAsync<ITraktAuthorization>(savedAuthorization).Result;
 
         if (!savedAuth.IsRefreshPossible)
         {
@@ -228,9 +229,9 @@ namespace Tests
         }
 
         ITraktAuthorization refreshedAuth = _traktClient.RefreshAuthorization(savedAuth.RefreshToken);
-        string serializedAuth = JsonConvert.SerializeObject(refreshedAuth);
+        string serializedAuth = TraktSerializationService.SerializeAsync(refreshedAuth).Result;
         _fileOperations.FileWriteAllText(authFilePath, serializedAuth, Encoding.UTF8);
       }
     }
-   */
+  }  
 }

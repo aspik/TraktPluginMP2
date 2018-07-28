@@ -37,14 +37,14 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 80379, Imdb = "tt0898266"}
           },
-          Seasons = new List<TraktSeason>
+          CollectionSeasons = new List<TraktCollectionShowSeason>
           {
-            new TraktSeason()
+            new TraktCollectionShowSeason()
             {
               Number = 9,
-              Episodes = new List<TraktEpisode>
+              Episodes = new List<TraktCollectionShowEpisode>
               {
-                new TraktEpisode() {Number = 1}
+                new TraktCollectionShowEpisode() {Number = 1}
               }
             }
           }
@@ -55,14 +55,14 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 248682, Imdb = "tt1826940"}
           },
-          Seasons = new List<TraktSeason>
+          CollectionSeasons = new List<TraktCollectionShowSeason>
           {
-            new TraktSeason
+            new TraktCollectionShowSeason
             {
               Number = 1,
-              Episodes = new List<TraktEpisode>
+              Episodes = new List<TraktCollectionShowEpisode>
               {
-                new TraktEpisode {Number = 3}
+                new TraktCollectionShowEpisode {Number = 3}
               }
             }
           }
@@ -73,14 +73,14 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 298901, Imdb = "tt4635276"}
           },
-          Seasons = new List<ITraktSeason>
+          CollectionSeasons = new List<TraktCollectionShowSeason>
           {
-            new TraktSeason
+            new TraktCollectionShowSeason
             {
               Number = 1,
-              Episodes = new List<ITraktEpisode>
+              Episodes = new List<TraktCollectionShowEpisode>
               {
-                new TraktEpisode {Number = 1}
+                new TraktCollectionShowEpisode {Number = 1}
               }
             }
           }
@@ -98,15 +98,15 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 80379, Imdb = "tt0898266"}
           },
-          Seasons = new List<TraktSeason>
+          CollectionSeasons = new List<TraktCollectionShowSeason>
           {
-            new TraktSeason
+            new TraktCollectionShowSeason
             {
               Number = 9,
-              Episodes = new List<TraktEpisode>
+              Episodes = new List<TraktCollectionShowEpisode>
               {
-                new TraktEpisode {Number = 1},
-                new TraktEpisode {Number = 2}
+                new TraktCollectionShowEpisode {Number = 1},
+                new TraktCollectionShowEpisode {Number = 2}
               }
             }
           }
@@ -117,14 +117,14 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 248682, Imdb = "tt1826940"}
           },
-          Seasons = new List<TraktSeason>
+          CollectionSeasons = new List<TraktCollectionShowSeason>
           {
-            new TraktSeason
+            new TraktCollectionShowSeason
             {
               Number = 1,
-              Episodes = new List<TraktEpisode>
+              Episodes = new List<TraktCollectionShowEpisode>
               {
-                new TraktEpisode {Number = 3}
+                new TraktCollectionShowEpisode {Number = 3}
               }
             }
           }
@@ -135,16 +135,16 @@ namespace Tests.TestData.Cache
           {
             Ids = new TraktShowIds {Tvdb = 298901, Imdb = "tt4635276"}
           },
-          Seasons = new List<TraktSeason>
+          CollectionSeasons = new List<TraktCollectionShowSeason>
           {
-            new TraktSeason
+            new TraktCollectionShowSeason
             {
               Number = 1,
-              Episodes = new List<TraktEpisode>
+              Episodes = new List<TraktCollectionShowEpisode>
               {
-                new TraktEpisode {Number = 1},
-                new TraktEpisode {Number = 2},
-                new TraktEpisode {Number = 3}
+                new TraktCollectionShowEpisode {Number = 1},
+                new TraktCollectionShowEpisode {Number = 2},
+                new TraktCollectionShowEpisode {Number = 3}
               }
             }
           }

@@ -83,36 +83,44 @@ namespace TraktPluginMP2.Services
 
     private void RefreshWatchedMovies()
     {
-      DateTime? onlineWatchedMoviesDate = _onlineSyncLastActivities.Movies.WatchedAt;
-      DateTime? savedWatchedMoviesDate = _savedSyncLastActivities.Movies.WatchedAt;
-      WatchedMovies = IsCacheUpToDate(onlineWatchedMoviesDate, savedWatchedMoviesDate) ? CachedWatchedMovies() : OnlineWatchedMovies();
+      if (!IsCacheInitialized(FileName.WatchedMovies.Value))
+      {
+        SaveWatchedMovies(_traktClient.GetWatchedMovies());
+      }
+
+      if (_onlineSyncLastActivities.Movies.WatchedAt == _savedSyncLastActivities.Movies.WatchedAt)
+      {
+        WatchedMovies = CachedWatchedMovies();
+      }
+      else
+      {
+        WatchedMovies = _traktClient.GetWatchedMovies();
+        SaveWatchedMovies(WatchedMovies.ToList());
+      }
     }
 
-    private bool IsCacheUpToDate(DateTime? dateTime, DateTime? dateTime1)
+    private bool IsCacheInitialized(string file)
     {
-      return dateTime == dateTime1;
+      string filePath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), file);
+      return _fileOperations.FileExists(filePath);
     }
 
     private void RefreshCollectedMovies()
     {
-      DateTime? onlineCollectedMoviesDate = _onlineSyncLastActivities.Movies.CollectedAt;
-      DateTime? savedCollectedMoviesDate = _savedSyncLastActivities.Movies.CollectedAt;
-      CollectedMovies = IsCacheUpToDate(onlineCollectedMoviesDate, savedCollectedMoviesDate) ? CachedCollectedMovies() : OnlineCollectedMovies();
-    }
+      if (!IsCacheInitialized(FileName.CollectedMovies.Value))
+      {
+        SaveCollectedMovies(_traktClient.GetCollectedMovies());
+      }
 
-    private IEnumerable<ITraktCollectionMovie> OnlineCollectedMovies()
-    {
-      IEnumerable<ITraktCollectionMovie> collectedMovies = _traktClient.GetCollectedMovies();
-      SaveCollectedMovies(collectedMovies);
-
-      return collectedMovies;
-    }
-
-    private IEnumerable<ITraktWatchedMovie> OnlineWatchedMovies()
-    {
-      IEnumerable<ITraktWatchedMovie> watchedMovies = _traktClient.GetWatchedMovies();
-      SaveWatchedMovies(watchedMovies);
-      return watchedMovies;
+      if (_onlineSyncLastActivities.Movies.CollectedAt == _savedSyncLastActivities.Movies.CollectedAt)
+      {
+        CollectedMovies = CachedCollectedMovies();
+      }
+      else
+      {
+        CollectedMovies = _traktClient.GetCollectedMovies();
+        SaveCollectedMovies(CollectedMovies);
+      }
     }
 
     private void RefreshUnWatchedEpisodes()
@@ -189,22 +197,44 @@ namespace TraktPluginMP2.Services
           }
         }
       }
-      SaveWatchedEpisodes(episodesWatched);
       return episodesWatched;
     }
 
     private void RefreshWatchedEpisodes()
     {
-      DateTime? onlineWatchedEpisodesDate = _onlineSyncLastActivities.Episodes.WatchedAt;
-      DateTime? savedWatchedEpisodesDate = _savedSyncLastActivities.Episodes.WatchedAt;
-      WatchedEpisodes = IsCacheUpToDate(onlineWatchedEpisodesDate, savedWatchedEpisodesDate) ? CachedWatchedEpisodes() : OnlineWatchedEpisodes();
+      if (!IsCacheInitialized(FileName.WatchedEpisodes.Value))
+      {
+        SaveWatchedEpisodes(OnlineWatchedEpisodes().ToList());
+      }
+
+      if (_onlineSyncLastActivities.Episodes.WatchedAt == _savedSyncLastActivities.Episodes.WatchedAt)
+      {
+        WatchedEpisodes = CachedWatchedEpisodes();
+      }
+      else
+      {
+        WatchedEpisodes = OnlineWatchedEpisodes();
+        SaveWatchedEpisodes(WatchedEpisodes.ToList());
+
+      }
     }
 
     private void RefreshCollectedEpisodes()
     {
-      DateTime? onlineCollectedEpisodesDate = _onlineSyncLastActivities.Episodes.CollectedAt;
-      DateTime? savedCollectedEpisodesDate = _savedSyncLastActivities.Episodes.CollectedAt;
-      CollectedEpisodes = IsCacheUpToDate(onlineCollectedEpisodesDate, savedCollectedEpisodesDate) ? CachedCollectedEpisodes() : OnlineCollectedEpisodes();
+      if (!IsCacheInitialized(FileName.CollectedEpisodes.Value))
+      {
+        SaveCollectedEpisodes(OnlineCollectedEpisodes().ToList());
+      }
+
+      if (_onlineSyncLastActivities.Episodes.CollectedAt == _savedSyncLastActivities.Episodes.CollectedAt)
+      {
+        CollectedEpisodes = CachedCollectedEpisodes();
+      }
+      else
+      {
+        CollectedEpisodes = OnlineCollectedEpisodes();
+        SaveCollectedEpisodes(CollectedEpisodes.ToList());
+      }
     }
 
     private IEnumerable<EpisodeCollected> OnlineCollectedEpisodes()
@@ -234,8 +264,6 @@ namespace TraktPluginMP2.Services
           }
         }
       }
-      SaveCollectedEpisodes(episodesCollected);
-
       return episodesCollected;
     }
 

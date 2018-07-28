@@ -597,12 +597,15 @@ namespace TraktPluginMP2.Services
 
           DateTime collectedAt = MediaItemAspectsUtl.GetDateAddedToDb(episode);
 
-          builder.AddShow(show, metadata, collectedAt,
+          builder.AddShow(show,
             new PostSeasons
             {
               {
                 MediaItemAspectsUtl.GetSeasonIndex(episode),
-                new PostEpisodes {MediaItemAspectsUtl.GetEpisodeIndex(episode)}
+                new PostEpisodes
+                {
+                  {MediaItemAspectsUtl.GetEpisodeIndex(episode), metadata, collectedAt}
+                }
               }
             });
         }

@@ -152,10 +152,17 @@ namespace TraktPluginMP2.Models
           IThreadPool threadPool = _mediaPortalServices.GetThreadPool();
           threadPool.Add(() =>
           {
-            TestStatus = "[Trakt.SyncMovies]";
-          //  _librarySynchronization.SyncMovies();
-            TestStatus = "[Trakt.SyncSeries]";
-            _librarySynchronization.SyncSeries();
+            if (_mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.SyncOnlyMovies || _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.SyncSeriesAndMovies)
+            {
+              TestStatus = "[Trakt.SyncMovies]";
+              _librarySynchronization.SyncMovies();
+            }
+
+            if (_mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.SyncOnlySeries || _mediaPortalServices.GetTraktSettingsWatcher().TraktSettings.SyncSeriesAndMovies)
+            {
+              TestStatus = "[Trakt.SyncSeries]";
+              _librarySynchronization.SyncSeries();
+            }
             IsSynchronizing = false;
             TestStatus = "[Trakt.SyncFinished]";
           }, ThreadPriority.BelowNormal);

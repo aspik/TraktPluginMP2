@@ -93,6 +93,7 @@
     <Compile Include="Services\TraktSettingsChangeWatcher.cs" />
     <Compile Include="Services\UserMessageHandlerProxy.cs" />
     <Compile Include="Settings\Configuration\AutomaticSyncNotificationSetting.cs" />
+    <Compile Include="Settings\Configuration\LibrarySyncSetting.cs" />
     <Compile Include="Settings\Configuration\ScrobbleStartedNotificationSetting.cs" />
     <Compile Include="Settings\Configuration\ScrobbleStoppedNotificationSetting.cs" />
     <Compile Include="Settings\Configuration\TraktSettingsConfiguration.cs" />

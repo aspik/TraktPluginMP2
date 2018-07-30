@@ -27,5 +27,14 @@ namespace TraktPluginMP2.Settings
 
     [Setting(SettingScope.User, DefaultValue = true)]
     public bool ShowAutomaticSyncNotificationsOnFailure { get; set; }
+
+    [Setting(SettingScope.User, DefaultValue = true)]
+    public bool SyncSeriesAndMovies { get; set; }
+
+    [Setting(SettingScope.User, DefaultValue = false)]
+    public bool SyncOnlySeries { get; set; }
+
+    [Setting(SettingScope.User, DefaultValue = false)]
+    public bool SyncOnlyMovies { get; set; }
   }
 }

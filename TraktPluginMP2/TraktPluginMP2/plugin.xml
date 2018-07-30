@@ -99,6 +99,11 @@
       Text="[Settings.Plugins.Trakt.AutoSyncNotifications]"
       HelpText="[Settings.Plugins.Trakt.AutoSyncNotifications.Help]"
       ClassName="TraktPluginMP2.Settings.Configuration.AutomaticSyncNotificationSetting"/>
+    <ConfigSetting
+      Id="LibrarySyncOptions"
+      Text="[Settings.Plugins.Trakt.LibrarySyncOptions]"
+      HelpText="[Settings.Plugins.Trakt.LibrarySyncOptions.Help]"
+      ClassName="TraktPluginMP2.Settings.Configuration.LibrarySyncSetting"/>
   </Register>
   
 </Plugin>

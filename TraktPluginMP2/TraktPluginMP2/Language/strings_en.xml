@@ -35,13 +35,20 @@
   
   <string name="Settings.Plugins.Trakt.AlwaysShowNotification">Always show notification</string>
   <string name="Settings.Plugins.Trakt.ShowNotificationOnFailure">Show only on failure</string>
-  <string name="Settings.Plugins.Trakt.DisableNotifications">Disable notifications</string>  
-  
+  <string name="Settings.Plugins.Trakt.DisableNotifications">Disable notifications</string>
+
+  <string name="Settings.Plugins.Trakt.SyncSeriesAndMovies">Sync movies and series</string>
+  <string name="Settings.Plugins.Trakt.SyncOnlySeries">Sync only series</string>
+  <string name="Settings.Plugins.Trakt.SyncOnlyMovies">Sync only movies</string>
+
   <string name="Settings.Plugins.Trakt.TraktSetup">Authorization and syncing</string>
   <string name="Settings.Plugins.Trakt.TraktSetup.Help">Authorize trakt and synchronize your library with trakt</string>
 
   <string name="Settings.Plugins.Trakt.AutoSyncNotifications">Automatic library sync notifications</string>
   <string name="Settings.Plugins.Trakt.AutoSyncNotifications.Help">Configure automatic library sync notifications</string>
+
+  <string name="Settings.Plugins.Trakt.LibrarySyncOptions">Library sync options</string>
+  <string name="Settings.Plugins.Trakt.LibrarySyncOptions.Help">Configure what should by synced with trakt</string>
 
   <string name="Trakt.ScrobbleStartedHeader">Scrobble started</string>
   <string name="Trakt.ScrobbleStoppedHeader">Scrobble stopped</string>

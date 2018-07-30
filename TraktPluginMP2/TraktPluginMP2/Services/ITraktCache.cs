@@ -10,6 +10,7 @@ namespace TraktPluginMP2.Services
   {
     void RefreshMoviesCache();
     void RefreshSeriesCache();
+    void ClearLastActivity(string filename);
     IEnumerable<ITraktMovie> UnWatchedMovies { get; } 
     IEnumerable<ITraktWatchedMovie> WatchedMovies { get; } 
     IEnumerable<ITraktCollectionMovie> CollectedMovies { get; }

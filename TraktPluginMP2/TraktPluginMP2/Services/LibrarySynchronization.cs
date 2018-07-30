@@ -14,7 +14,6 @@ using TraktNet.Objects.Basic;
 using TraktNet.Objects.Get.Collections;
 using TraktNet.Objects.Get.Movies;
 using TraktNet.Objects.Get.Shows;
-using TraktNet.Objects.Get.Syncs.Activities;
 using TraktNet.Objects.Get.Watched;
 using TraktNet.Objects.Post;
 using TraktNet.Objects.Post.Syncs.Collection;
@@ -177,6 +176,7 @@ namespace TraktPluginMP2.Services
 
         ITraktSyncHistoryPostResponse watchedResponse = _traktClient.AddWatchedHistoryItems(new TraktSyncHistoryPost { Movies = syncWatchedMovies });
         syncMoviesResult.AddedToTraktWatchedHistory = watchedResponse.Added?.Movies;
+        _traktCache.ClearLastActivity(FileName.WatchedMovies.Value);
 
         if (watchedResponse.Added?.Movies != null)
         {
@@ -226,6 +226,7 @@ namespace TraktPluginMP2.Services
         }
         ITraktSyncCollectionPostResponse collectionResponse = _traktClient.AddCollectionItems(new TraktSyncCollectionPost { Movies = syncCollectedMovies });
         syncMoviesResult.AddedToTraktCollection = collectionResponse.Added?.Movies;
+        _traktCache.ClearLastActivity(FileName.CollectedMovies.Value);
 
         if (collectionResponse.Added?.Movies != null)
         {
@@ -362,6 +363,7 @@ namespace TraktPluginMP2.Services
         _mediaPortalServices.GetLogger().Info("Trakt: trying to add {0} watched episodes to trakt watched history", syncHistoryPost.Shows.Count());
         ITraktSyncHistoryPostResponse response = _traktClient.AddWatchedHistoryItems(syncHistoryPost);
         syncEpisodesResult.AddedToTraktWatchedHistory = response.Added?.Episodes;
+        _traktCache.ClearLastActivity(FileName.WatchedEpisodes.Value);
 
         if (response.Added?.Episodes != null)
         {
@@ -379,6 +381,7 @@ namespace TraktPluginMP2.Services
         _mediaPortalServices.GetLogger().Info("Trakt: trying to add {0} collected episodes to trakt collection", syncCollectionPost.Shows.Count());
         ITraktSyncCollectionPostResponse response = _traktClient.AddCollectionItems(syncCollectionPost);
         syncEpisodesResult.AddedToTraktCollection = response.Added?.Episodes;
+        _traktCache.ClearLastActivity(FileName.CollectedEpisodes.Value);
 
         if (response.Added?.Episodes != null)
         {

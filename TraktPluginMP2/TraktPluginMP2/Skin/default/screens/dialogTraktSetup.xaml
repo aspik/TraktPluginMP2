@@ -71,9 +71,6 @@
               </CommandList>
             </Button.Command>
           </Button>
-          
-          <Button x:Name="Backup" Content="[Trakt.Backup]" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="3"
-                  Command="{Command BackupLibrary}" Margin="10" HorizontalContentAlignment="Center"/>
         </Grid>
         
       </Grid>

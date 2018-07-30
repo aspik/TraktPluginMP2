@@ -46,7 +46,7 @@ namespace TraktPluginMP2.Services
       RefreshWatchedMovies();
       RefreshCollectedMovies();
 
-      SaveLastSyncActivities(_onlineSyncLastActivities);
+      SaveLastSyncActivities(_savedSyncLastActivities);
     }
 
     public void RefreshSeriesCache()
@@ -58,7 +58,31 @@ namespace TraktPluginMP2.Services
       RefreshWatchedEpisodes();
       RefreshCollectedEpisodes();
 
-      SaveLastSyncActivities(_onlineSyncLastActivities);
+      SaveLastSyncActivities(_savedSyncLastActivities);
+    }
+
+    public void ClearLastActivity(string filename)
+    {
+      ITraktSyncLastActivities lastActivities = SavedLastSyncActivities();
+      if (filename.Equals(FileName.CollectedEpisodes.Value))
+      {
+        lastActivities.Episodes.CollectedAt = null;
+      }
+      else if (filename.Equals(FileName.CollectedMovies.Value))
+      {
+        lastActivities.Movies.CollectedAt = null;
+      }
+      else if (filename.Equals(FileName.WatchedEpisodes.Value))
+      {
+        lastActivities.Episodes.WatchedAt = null;
+      }
+      else if (filename.Equals(FileName.WatchedMovies.Value))
+      {
+        lastActivities.Movies.WatchedAt = null;
+      }
+
+      _savedSyncLastActivities = lastActivities;
+      SaveLastSyncActivities(_savedSyncLastActivities);
     }
 
     private void RefreshUnWatchedMovies()
@@ -83,12 +107,7 @@ namespace TraktPluginMP2.Services
 
     private void RefreshWatchedMovies()
     {
-      if (!IsCacheInitialized(FileName.WatchedMovies.Value))
-      {
-        SaveWatchedMovies(_traktClient.GetWatchedMovies());
-      }
-
-      if (_onlineSyncLastActivities.Movies.WatchedAt == _savedSyncLastActivities.Movies.WatchedAt)
+      if (IsCacheInitialized(FileName.WatchedMovies.Value) && _onlineSyncLastActivities.Movies.WatchedAt == _savedSyncLastActivities.Movies.WatchedAt)
       {
         WatchedMovies = CachedWatchedMovies();
       }
@@ -96,7 +115,8 @@ namespace TraktPluginMP2.Services
       {
         WatchedMovies = _traktClient.GetWatchedMovies();
         SaveWatchedMovies(WatchedMovies.ToList());
-      }
+        _savedSyncLastActivities.Movies.WatchedAt = _onlineSyncLastActivities.Movies.WatchedAt;
+      } 
     }
 
     private bool IsCacheInitialized(string file)
@@ -107,12 +127,7 @@ namespace TraktPluginMP2.Services
 
     private void RefreshCollectedMovies()
     {
-      if (!IsCacheInitialized(FileName.CollectedMovies.Value))
-      {
-        SaveCollectedMovies(_traktClient.GetCollectedMovies());
-      }
-
-      if (_onlineSyncLastActivities.Movies.CollectedAt == _savedSyncLastActivities.Movies.CollectedAt)
+      if (IsCacheInitialized(FileName.CollectedMovies.Value) && _onlineSyncLastActivities.Movies.CollectedAt == _savedSyncLastActivities.Movies.CollectedAt)
       {
         CollectedMovies = CachedCollectedMovies();
       }
@@ -120,6 +135,7 @@ namespace TraktPluginMP2.Services
       {
         CollectedMovies = _traktClient.GetCollectedMovies();
         SaveCollectedMovies(CollectedMovies);
+        _savedSyncLastActivities.Movies.CollectedAt = _onlineSyncLastActivities.Movies.CollectedAt;
       }
     }
 
@@ -202,12 +218,7 @@ namespace TraktPluginMP2.Services
 
     private void RefreshWatchedEpisodes()
     {
-      if (!IsCacheInitialized(FileName.WatchedEpisodes.Value))
-      {
-        SaveWatchedEpisodes(OnlineWatchedEpisodes().ToList());
-      }
-
-      if (_onlineSyncLastActivities.Episodes.WatchedAt == _savedSyncLastActivities.Episodes.WatchedAt)
+      if (IsCacheInitialized(FileName.WatchedEpisodes.Value) && _onlineSyncLastActivities.Episodes.WatchedAt == _savedSyncLastActivities.Episodes.WatchedAt)
       {
         WatchedEpisodes = CachedWatchedEpisodes();
       }
@@ -215,18 +226,13 @@ namespace TraktPluginMP2.Services
       {
         WatchedEpisodes = OnlineWatchedEpisodes();
         SaveWatchedEpisodes(WatchedEpisodes.ToList());
-
+        _savedSyncLastActivities.Episodes.WatchedAt = _onlineSyncLastActivities.Episodes.WatchedAt;
       }
     }
 
     private void RefreshCollectedEpisodes()
     {
-      if (!IsCacheInitialized(FileName.CollectedEpisodes.Value))
-      {
-        SaveCollectedEpisodes(OnlineCollectedEpisodes().ToList());
-      }
-
-      if (_onlineSyncLastActivities.Episodes.CollectedAt == _savedSyncLastActivities.Episodes.CollectedAt)
+      if (IsCacheInitialized(FileName.CollectedEpisodes.Value) && _onlineSyncLastActivities.Episodes.CollectedAt == _savedSyncLastActivities.Episodes.CollectedAt)
       {
         CollectedEpisodes = CachedCollectedEpisodes();
       }
@@ -234,6 +240,7 @@ namespace TraktPluginMP2.Services
       {
         CollectedEpisodes = OnlineCollectedEpisodes();
         SaveCollectedEpisodes(CollectedEpisodes.ToList());
+        _savedSyncLastActivities.Episodes.CollectedAt = _onlineSyncLastActivities.Episodes.CollectedAt;
       }
     }
 
@@ -273,7 +280,12 @@ namespace TraktPluginMP2.Services
       string savedSyncActivitiesFilePath = Path.Combine(traktUserHomePath, FileName.LastActivity.Value);
       if (!_fileOperations.FileExists(savedSyncActivitiesFilePath))
       {
-        throw new Exception("Last sync activities file could not be found in: " + traktUserHomePath);
+        return new TraktSyncLastActivities
+        {
+          Movies = new TraktSyncMoviesLastActivities(),
+          Shows = new TraktSyncShowsLastActivities(),
+          Episodes = new TraktSyncEpisodesLastActivities()
+        };
       }
       string savedSyncActivitiesJson = _fileOperations.FileReadAllText(savedSyncActivitiesFilePath);
       return TraktSerializationService.DeserializeAsync<ITraktSyncLastActivities>(savedSyncActivitiesJson).Result;

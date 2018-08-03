@@ -16,6 +16,7 @@ using TraktNet.Objects.Get.Episodes;
 using TraktNet.Objects.Get.Movies;
 using TraktNet.Objects.Get.Shows;
 using TraktNet.Objects.Post.Scrobbles.Responses;
+using TraktNet.Services;
 using TraktPluginMP2.Notifications;
 using TraktPluginMP2.Services;
 using TraktPluginMP2.Utilities;
@@ -166,7 +167,7 @@ namespace TraktPluginMP2.Handlers
       _traktShow = ExtractTraktShow(episodeMediaItem);
       float progress = GetCurrentProgress(pmc);
       ITraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StartScrobbleEpisode(_traktEpisode, _traktShow, progress);
-      string title = postEpisodeResponse.Episode.Title;
+      string title = postEpisodeResponse.Show.Title + " " + postEpisodeResponse.Episode.SeasonNumber + "x" + postEpisodeResponse.Episode.Number;
       int? traktProgress = null;
       if (postEpisodeResponse.Progress != null)
       {
@@ -190,7 +191,7 @@ namespace TraktPluginMP2.Handlers
       {
         string authFilePath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.Authorization.Value);
         string savedAuthorization = _fileOperations.FileReadAllText(authFilePath);
-        TraktAuthorization savedAuth = JsonConvert.DeserializeObject<TraktAuthorization>(savedAuthorization);
+        ITraktAuthorization savedAuth = TraktSerializationService.DeserializeAsync<ITraktAuthorization>(savedAuthorization).Result;
 
         if (!savedAuth.IsRefreshPossible)
         {
@@ -198,7 +199,7 @@ namespace TraktPluginMP2.Handlers
         }
 
         ITraktAuthorization refreshedAuth = _traktClient.RefreshAuthorization(savedAuth.RefreshToken);
-        string serializedAuth = JsonConvert.SerializeObject(refreshedAuth);
+        string serializedAuth = TraktSerializationService.SerializeAsync(refreshedAuth).Result;
         _fileOperations.FileWriteAllText(authFilePath, serializedAuth, Encoding.UTF8);
       }
     }
@@ -258,7 +259,7 @@ namespace TraktPluginMP2.Handlers
       _traktMovie = ConvertMediaItemToTraktMovie(movieMediaItem);
       float progress = GetCurrentProgress(pmc);
       ITraktMovieScrobblePostResponse postMovieResponse = _traktClient.StartScrobbleMovie(_traktMovie, progress);
-      string title = postMovieResponse.Movie.Title;
+      string title = postMovieResponse.Movie.Title +  " " + "(" + postMovieResponse.Movie.Year + ")";
       int? traktProgress = null;
       if (postMovieResponse.Progress != null)
       {
@@ -311,7 +312,7 @@ namespace TraktPluginMP2.Handlers
 
           float progress = GetSavedProgress();
           ITraktEpisodeScrobblePostResponse postEpisodeResponse = _traktClient.StopScrobbleEpisode(_traktEpisode, _traktShow, progress);
-          string title = postEpisodeResponse.Episode.Title;
+          string title = postEpisodeResponse.Show.Title + " " + postEpisodeResponse.Episode.SeasonNumber + "x" + postEpisodeResponse.Episode.Number;
           int? traktProgress = null;
           if (postEpisodeResponse.Progress != null)
           {
@@ -335,7 +336,7 @@ namespace TraktPluginMP2.Handlers
 
           float progress = GetSavedProgress();
           ITraktMovieScrobblePostResponse postMovieResponse = _traktClient.StopScrobbleMovie(_traktMovie, progress);
-          string title = postMovieResponse.Movie.Title;
+          string title = postMovieResponse.Movie.Title + " " + "(" + postMovieResponse.Movie.Year + ")";
           int? traktProgress = null;
           if (postMovieResponse.Progress != null)
           {

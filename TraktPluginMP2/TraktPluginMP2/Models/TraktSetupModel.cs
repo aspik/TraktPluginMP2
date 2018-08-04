@@ -7,7 +7,6 @@ using MediaPortal.Common.General;
 using MediaPortal.Common.Threading;
 using MediaPortal.UI.Presentation.Models;
 using MediaPortal.UI.Presentation.Workflow;
-using Newtonsoft.Json;
 using TraktNet.Objects.Authentication;
 using TraktNet.Objects.Get.Syncs.Activities;
 using TraktNet.Objects.Get.Users;

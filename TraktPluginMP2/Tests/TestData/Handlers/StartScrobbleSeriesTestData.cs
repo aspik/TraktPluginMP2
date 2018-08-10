@@ -17,7 +17,7 @@ namespace Tests.TestData.Handlers
   {
     public IEnumerator<object[]> GetEnumerator()
     {
-      const string title = "Title_1";
+      const string title = "Title_1 2x2";
       yield return new object[]
       {
         new TraktPluginSettings
@@ -47,11 +47,14 @@ namespace Tests.TestData.Handlers
       traktClient.StartScrobbleEpisode(Arg.Any<ITraktEpisode>(), Arg.Any<ITraktShow>(), Arg.Any<float>()).Returns(
         new TraktEpisodeScrobblePostResponse
         {
+          Show = new TraktShow
+          {
+            Title = "Title_1"
+          },
           Episode = new TraktEpisode
           {
             Ids = new TraktEpisodeIds { Imdb = "tt12345", Tvdb = 289590 },
             Number = 2,
-            Title = "Title_1",
             SeasonNumber = 2
           },
           Action = TraktScrobbleActionType.Start,

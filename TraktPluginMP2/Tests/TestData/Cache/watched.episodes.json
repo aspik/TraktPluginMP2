@@ -1,46 +1,90 @@
 ﻿[
   {
-    "Number": 1,
-    "Season": 9,
-    "ShowId": 1409,
-    "ShowImdbId": "tt0898266",
-    "ShowTitle": "The Big Bang Theory",
-    "ShowTvdbId": 80379,
-    "ShowYear": 2007,
-    "Plays": 2,
-    "WatchedAt": "2016-02-04T20:59:35.000Z"
+    "plays": 1,
+    "last_watched_at": "2018-08-07T21:00:30.000Z",
+    "show": {
+      "title": "New Girl",
+      "year": 2011,
+      "ids": {
+        "trakt": 1411,
+        "slug": "new-girl",
+        "tvdb": 248682,
+        "imdb": "tt1826940",
+        "tmdb": 1420,
+        "tvrage": 28304
+      }
+    },
+    "seasons": [
+      {
+        "number": 7,
+        "episodes": [
+          {
+            "number": 1,
+            "plays": 1,
+            "last_watched_at": "2018-08-07T21:00:30.000Z"
+          }
+        ]
+      }
+    ]
   },
   {
-    "Number": 2,
-    "Season": 9,
-    "ShowId": 1409,
-    "ShowImdbId": "tt0898266",
-    "ShowTitle": "The Big Bang Theory",
-    "ShowTvdbId": 80379,
-    "ShowYear": 2007,
-    "Plays": 3,
-    "WatchedAt": "2016-02-06T23:51:15.000Z"
+    "plays": 2,
+    "last_watched_at": "2018-08-07T21:00:17.000Z",
+    "show": {
+      "title": "DIG",
+      "year": 2015,
+      "ids": {
+        "trakt": 76760,
+        "slug": "dig",
+        "tvdb": 275278,
+        "imdb": "tt3597606",
+        "tmdb": 62120,
+        "tvrage": 38901
+      }
+    },
+    "seasons": [
+      {
+        "number": 1,
+        "episodes": [
+          {
+            "number": 3,
+            "plays": 1,
+            "last_watched_at": "2018-08-07T21:00:15.000Z"
+          },
+          {
+            "number": 4,
+            "plays": 1,
+            "last_watched_at": "2018-08-07T21:00:17.000Z"
+          }
+        ]
+      }
+    ]
   },
   {
-    "Number": 1,
-    "Season": 1,
-    "ShowId": 100817,
-    "ShowImdbId": "tt4635276",
-    "ShowTitle": "Master of None",
-    "ShowTvdbId": 298901,
-    "ShowYear": 2015,
-    "Plays": 2,
-    "WatchedAt": "2016-02-03T22:53:15.000Z"
-  },
-  {
-    "Number": 1,
-    "Season": 1,
-    "ShowId": 1411,
-    "ShowImdbId": "tt1826940",
-    "ShowTitle": "New Girl",
-    "ShowTvdbId": 248682,
-    "ShowYear": 2011,
-    "Plays": 2,
-    "WatchedAt": "2016-02-07T23:51:55.000Z"
+    "plays": 3,
+    "last_watched_at": "2018-08-07T21:00:10.000Z",
+    "show": {
+      "title": "Jean-Claude Van Johnson",
+      "year": 2016,
+      "ids": {
+        "trakt": 110636,
+        "slug": "jean-claude-van-johnson",
+        "tvdb": 317653,
+        "imdb": "tt6682754",
+        "tmdb": 67497
+      }
+    },
+    "seasons": [
+      {
+        "number": 1,
+        "episodes": [
+          {
+            "number": 2,
+            "plays": 1,
+            "last_watched_at": "2018-08-07T20:59:56.000Z"
+          }
+        ]
+      }
+    ]
   }
 ]

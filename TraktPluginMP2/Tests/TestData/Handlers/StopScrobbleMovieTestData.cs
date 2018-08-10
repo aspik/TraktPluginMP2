@@ -16,7 +16,7 @@ namespace Tests.TestData.Handlers
   {
     public IEnumerator<object[]> GetEnumerator()
     {
-      const string title = "Movie1";
+      const string title = "Movie1 (2016)";
       yield return new object[]
       {
         new TraktPluginSettings

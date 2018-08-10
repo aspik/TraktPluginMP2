@@ -16,7 +16,7 @@ namespace Tests.TestData.Handlers
   {
     public IEnumerator<object[]> GetEnumerator()
     {
-      const string title = "Movie1";
+      const string title = "Movie1 (2012)";
       yield return new object[]
       {
         new TraktPluginSettings
@@ -36,7 +36,8 @@ namespace Tests.TestData.Handlers
       traktClient.TraktAuthorization.Returns(new TraktAuthorization
       {
         RefreshToken = "ValidToken",
-        AccessToken = "ValidToken"
+        AccessToken = "ValidToken",
+        
       });
 
       traktClient.RefreshAuthorization(Arg.Any<string>()).Returns(new TraktAuthorization
@@ -50,7 +51,7 @@ namespace Tests.TestData.Handlers
           {
             Ids = new TraktMovieIds { Imdb = "tt1431045", Tmdb = 67890 },
             Title = "Movie1",
-            Year = 2016,
+            Year = 2012
           },
           Action = TraktScrobbleActionType.Start,
           Progress = 10

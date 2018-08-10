@@ -47,7 +47,7 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(WatchedMoviesTestData))]
-    public void GetWatchedMovies(List<TraktWatchedMovie> onlineWatchedMovies, TraktSyncLastActivities onlineLastSyncActivities, int expectedWatchedMoviesCount)
+    public void GetWatchedMovies(List<ITraktWatchedMovie> onlineWatchedMovies, ITraktSyncLastActivities onlineLastSyncActivities, int expectedWatchedMoviesCount)
     {
       // Arrange
       ITraktClient traktClient = Substitute.For<ITraktClient>();
@@ -74,7 +74,7 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(CollectedMoviesTestData))]
-    public void GetCollectedMovies(List<TraktCollectionMovie> onlineCollectedMovies, TraktSyncLastActivities onlineLastSyncActivities, int expectedCollectedMoviesCount)
+    public void GetCollectedMovies(List<ITraktCollectionMovie> onlineCollectedMovies, ITraktSyncLastActivities onlineLastSyncActivities, int expectedCollectedMoviesCount)
     {
       // Arrange
       ITraktClient traktClient = Substitute.For<ITraktClient>();
@@ -101,7 +101,7 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(UnWatchedEpisodesTestData))]
-    public void GetUnWatchedEpisodes(List<TraktWatchedShow> onlineWatchedShows, TraktSyncLastActivities onlineLastSyncActivities, int expectedUnWatchedEpisodesCount)
+    public void GetUnWatchedEpisodes(List<ITraktWatchedShow> onlineWatchedShows, ITraktSyncLastActivities onlineLastSyncActivities, int expectedUnWatchedEpisodesCount)
     {
       // Arrange
       ITraktClient traktClient = Substitute.For<ITraktClient>();
@@ -128,7 +128,7 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(WatchedEpisodesTestData))]
-    public void GetWatchedEpisodes(List<TraktWatchedShow> onlineWatchedShows, TraktSyncLastActivities onlineLastSyncActivities, int expectedWatchedEpisodesCount)
+    public void GetWatchedEpisodes(List<ITraktWatchedShow> onlineWatchedShows, ITraktSyncLastActivities onlineLastSyncActivities, int expectedWatchedEpisodesCount)
     {
       // Arrange
       ITraktClient traktClient = Substitute.For<ITraktClient>();
@@ -155,7 +155,7 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(CollectedEpisodesTestData))]
-    public void GetCollectedEpisodes(List<TraktCollectionShow> onlineCollectedShows, TraktSyncLastActivities onlineLastSyncActivities, int expectedCollectedEpisodesCount)
+    public void GetCollectedEpisodes(List<ITraktCollectionShow> onlineCollectedShows, ITraktSyncLastActivities onlineLastSyncActivities, int expectedCollectedEpisodesCount)
     {
       // Arrange
       ITraktClient traktClient = Substitute.For<ITraktClient>();

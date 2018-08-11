@@ -48,12 +48,11 @@ namespace TraktPluginMP2.Services
 
       ValidateAuthorization();
 
-      _traktCache.RefreshMoviesCache();
-
       TraktSyncMoviesResult syncMoviesResult = new TraktSyncMoviesResult();
-      IList<ITraktMovie> traktUnWatchedMovies = _traktCache.UnWatchedMovies.ToList();
-      IList<ITraktWatchedMovie> traktWatchedMovies = _traktCache.WatchedMovies.ToList();
-      IList<ITraktCollectionMovie> traktCollectedMovies = _traktCache.CollectedMovies.ToList();
+      TraktMovies traktMovies = _traktCache.RefreshMoviesCache();
+      IList<ITraktMovie> traktUnWatchedMovies = traktMovies.UnWatched;
+      IList<ITraktWatchedMovie> traktWatchedMovies = traktMovies.Watched;
+      IList<ITraktCollectionMovie> traktCollectedMovies = traktMovies.Collected;
 
       Guid[] types =
       {
@@ -244,12 +243,11 @@ namespace TraktPluginMP2.Services
 
       ValidateAuthorization();
 
-      _traktCache.RefreshSeriesCache();
-
       TraktSyncEpisodesResult syncEpisodesResult = new TraktSyncEpisodesResult();
-      IList<Episode> traktUnWatchedEpisodes = _traktCache.UnWatchedEpisodes.ToList();
-      IList<EpisodeWatched> traktWatchedEpisodes = _traktCache.WatchedEpisodes.ToList();
-      IList<EpisodeCollected> traktCollectedEpisodes = _traktCache.CollectedEpisodes.ToList();
+      TraktEpisodes traktEpisodes = _traktCache.RefreshSeriesCache();
+      IList<Episode> traktUnWatchedEpisodes = traktEpisodes.UnWatched;
+      IList<EpisodeWatched> traktWatchedEpisodes = traktEpisodes.Watched;
+      IList<EpisodeCollected> traktCollectedEpisodes = traktEpisodes.Collected;
 
       Guid[] types =
       {

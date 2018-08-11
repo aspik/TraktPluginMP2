@@ -17,7 +17,7 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "67890", "Movie_2", 2016, 100).Movie,
           new MockedDatabaseMovie("", "0", "Movie_3", 2010, 100).Movie
         },
-        new List<TraktMovie>
+        new List<ITraktMovie>
         {
           new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 11290 }, Title = "Movie_1", Year = 2012},
           new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt11390", Tmdb = 67890 }, Title = "Movie_2", Year = 2016},
@@ -33,7 +33,7 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "67890", "Movie_2", 2016, 100).Movie,
           new MockedDatabaseMovie("", "0", "Movie_3", 2010, 100).Movie
         },
-        new List<TraktMovie>
+        new List<ITraktMovie>
         {
           new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 11290 }, Title = "Movie_1", Year = 2012},
         },
@@ -47,7 +47,7 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "12390", "Movie_2", 2016, 100).Movie,
           new MockedDatabaseMovie("", "0", "Movie_4", 2011, 100).Movie
         },
-        new List<TraktMovie>
+        new List<ITraktMovie>
         {
           new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 11290 }, Title = "Movie_1", Year = 2012},
           new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt67804", Tmdb = 67890 }, Title = "Movie_2", Year = 2016},

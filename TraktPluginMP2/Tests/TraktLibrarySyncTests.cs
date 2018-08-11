@@ -38,7 +38,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.WatchedMovies.Returns(traktMovies);
+      traktCache.RefreshMoviesCache().Returns(new TraktMovies {Watched = traktMovies, UnWatched = new List<ITraktMovie>(), Collected = new List<ITraktCollectionMovie>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
@@ -64,7 +64,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.CollectedMovies.Returns(traktMovies);
+      traktCache.RefreshMoviesCache().Returns(new TraktMovies {Collected = traktMovies, UnWatched = new List<ITraktMovie>(), Watched = new List<ITraktWatchedMovie>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
@@ -77,7 +77,7 @@ namespace Tests
 
     [Theory]
     [ClassData(typeof(TraktUnwatchedMoviesTestData))]
-    public void MarkMovieAsUnwatchedIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<TraktMovie> traktMovies, int expectedMoviesCount)
+    public void MarkMovieAsUnwatchedIfMediaLibraryAvailable(List<MediaItem> databaseMovies, List<ITraktMovie> traktMovies, int expectedMoviesCount)
     {
       // Arrange
       IMediaPortalServices mediaPortalServices = GetMockMediaPortalServices(databaseMovies);
@@ -88,7 +88,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.UnWatchedMovies.Returns(traktMovies);
+      traktCache.RefreshMoviesCache().Returns(new TraktMovies {UnWatched = traktMovies, Watched = new List<ITraktWatchedMovie>(), Collected = new List<ITraktCollectionMovie>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
@@ -112,7 +112,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.WatchedMovies.Returns(traktMovies);
+      traktCache.RefreshMoviesCache().Returns(new TraktMovies {Watched = traktMovies, UnWatched = new List<ITraktMovie>(), Collected = new List<ITraktCollectionMovie>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
@@ -137,7 +137,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.CollectedEpisodes.Returns(traktEpisodes);
+      traktCache.RefreshSeriesCache().Returns(new TraktEpisodes {Collected = traktEpisodes, UnWatched = new List<Episode>(), Watched = new List<EpisodeWatched>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
@@ -162,7 +162,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.WatchedEpisodes.Returns(traktEpisodes);
+      traktCache.RefreshSeriesCache().Returns(new TraktEpisodes {Watched = traktEpisodes, UnWatched = new List<Episode>(), Collected = new List<EpisodeCollected>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
@@ -186,7 +186,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.UnWatchedEpisodes.Returns(traktEpisodes);
+      traktCache.RefreshSeriesCache().Returns(new TraktEpisodes {UnWatched = traktEpisodes, Collected = new List<EpisodeCollected>(), Watched = new List<EpisodeWatched>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 
@@ -210,7 +210,7 @@ namespace Tests
       authorization.AccessToken = "ValidToken";
       traktClient.TraktAuthorization.Returns(authorization);
       ITraktCache traktCache = Substitute.For<ITraktCache>();
-      traktCache.WatchedEpisodes.Returns(traktEpisodes);
+      traktCache.RefreshSeriesCache().Returns(new TraktEpisodes {Watched = traktEpisodes, UnWatched = new List<Episode>(), Collected = new List<EpisodeCollected>()});
       IFileOperations fileOperations = Substitute.For<IFileOperations>();
       ILibrarySynchronization librarySynchronization = new LibrarySynchronization(mediaPortalServices, traktClient, traktCache, fileOperations);
 

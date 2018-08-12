@@ -100,12 +100,15 @@
     <Compile Include="Settings\IsAutomaticLibrarySyncEnabled.cs" />
     <Compile Include="Settings\IsScrobbleEnabled.cs" />
     <Compile Include="Settings\TraktPluginSettings.cs" />
+    <Compile Include="Structures\MovieCollected.cs" />
     <Compile Include="Structures\Episode.cs" />
     <Compile Include="Structures\EpisodeCollected.cs" />
     <Compile Include="Structures\EpisodeWatched.cs" />
     <Compile Include="Structures\MediaLibraryMovie.cs" />
+    <Compile Include="Structures\Movie.cs" />
     <Compile Include="Structures\TraktEpisodes.cs" />
     <Compile Include="Structures\TraktMovies.cs" />
+    <Compile Include="Structures\MovieWatched.cs" />
     <Compile Include="TraktSyncEpisodesResult.cs" />
     <Compile Include="TraktSyncMoviesResult.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />

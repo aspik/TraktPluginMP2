@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using MediaPortal.Common.MediaManagement;
-using TraktNet.Objects.Get.Movies;
+using TraktPluginMP2.Structures;
 
 namespace Tests.TestData.Setup
 {
@@ -17,11 +17,11 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "67890", "Movie_2", 2016, 100).Movie,
           new MockedDatabaseMovie("", "0", "Movie_3", 2010, 100).Movie
         },
-        new List<ITraktMovie>
+        new List<Movie>
         {
-          new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 11290 }, Title = "Movie_1", Year = 2012},
-          new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt11390", Tmdb = 67890 }, Title = "Movie_2", Year = 2016},
-          new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt99821", Tmdb = 31139 }, Title = "Movie_3", Year = 2010}
+          new Movie {Imdb = "tt12345", Tmdb = 11290, Title = "Movie_1", Year = 2012},
+          new Movie {Imdb = "tt11390", Tmdb = 67890, Title = "Movie_2", Year = 2016},
+          new Movie {Imdb = "tt99821", Tmdb = 31139, Title = "Movie_3", Year = 2010}
         },
         3
       };
@@ -33,9 +33,9 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "67890", "Movie_2", 2016, 100).Movie,
           new MockedDatabaseMovie("", "0", "Movie_3", 2010, 100).Movie
         },
-        new List<ITraktMovie>
+        new List<Movie>
         {
-          new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 11290 }, Title = "Movie_1", Year = 2012},
+          new Movie {Imdb = "tt12345", Tmdb = 11290, Title = "Movie_1", Year = 2012}
         },
         1
       };
@@ -47,11 +47,11 @@ namespace Tests.TestData.Setup
           new MockedDatabaseMovie("", "12390", "Movie_2", 2016, 100).Movie,
           new MockedDatabaseMovie("", "0", "Movie_4", 2011, 100).Movie
         },
-        new List<ITraktMovie>
+        new List<Movie>
         {
-          new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt12345", Tmdb = 11290 }, Title = "Movie_1", Year = 2012},
-          new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt67804", Tmdb = 67890 }, Title = "Movie_2", Year = 2016},
-          new TraktMovie {Ids = new TraktMovieIds {Imdb = "tt03412", Tmdb = 34251 }, Title = "Movie_3", Year = 2010}
+          new Movie {Imdb = "tt12345", Tmdb = 11290, Title = "Movie_1", Year = 2012},
+          new Movie {Imdb = "tt67804", Tmdb = 67890, Title = "Movie_2", Year = 2016},
+          new Movie {Imdb = "tt03412", Tmdb = 34251, Title = "Movie_3", Year = 2010}
         },
         0
       };

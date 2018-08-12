@@ -7,10 +7,10 @@ namespace TraktPluginMP2.Structures
 {
   public class TraktMovies
   {
-    public IList<ITraktMovie> UnWatched { get; set; }
+    public IList<Movie> UnWatched { get; set; }
 
-    public IList<ITraktWatchedMovie> Watched { get; set; }
+    public IList<MovieWatched> Watched { get; set; }
 
-    public IList<ITraktCollectionMovie> Collected { get; set; }
+    public IList<MovieCollected> Collected { get; set; }
   }
 }

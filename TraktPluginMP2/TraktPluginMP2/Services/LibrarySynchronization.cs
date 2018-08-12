@@ -50,9 +50,9 @@ namespace TraktPluginMP2.Services
 
       TraktSyncMoviesResult syncMoviesResult = new TraktSyncMoviesResult();
       TraktMovies traktMovies = _traktCache.RefreshMoviesCache();
-      IList<ITraktMovie> traktUnWatchedMovies = traktMovies.UnWatched;
-      IList<ITraktWatchedMovie> traktWatchedMovies = traktMovies.Watched;
-      IList<ITraktCollectionMovie> traktCollectedMovies = traktMovies.Collected;
+      IList<Movie> traktUnWatchedMovies = traktMovies.UnWatched;
+      IList<MovieWatched> traktWatchedMovies = traktMovies.Watched;
+      IList<MovieCollected> traktCollectedMovies = traktMovies.Collected;
 
       Guid[] types =
       {
@@ -109,8 +109,8 @@ namespace TraktPluginMP2.Services
 
           _mediaPortalServices.GetLogger().Info(
             "Marking movie as unwatched in library, movie is not watched on trakt. Title = '{0}', Year = '{1}', IMDb ID = '{2}', TMDb ID = '{3}'",
-            movie.Title, movie.Year.HasValue ? movie.Year.ToString() : "<empty>", movie.Ids.Imdb ?? "<empty>",
-            movie.Ids.Tmdb.HasValue ? movie.Ids.Tmdb.ToString() : "<empty>");
+            movie.Title, movie.Year.HasValue ? movie.Year.ToString() : "<empty>", movie.Imdb ?? "<empty>",
+            movie.Tmdb.HasValue ? movie.Tmdb.ToString() : "<empty>");
 
           if (_mediaPortalServices.MarkAsUnWatched(localMovie).Result)
           {
@@ -131,7 +131,7 @@ namespace TraktPluginMP2.Services
       {
         foreach (var twm in traktWatchedMovies)
         {
-          var localMovie = collectedMovies.FirstOrDefault(m => MovieMatch(m, twm.Movie));
+          var localMovie = collectedMovies.FirstOrDefault(m => MovieMatch(m, twm));
           if (localMovie == null)
           {
             continue;
@@ -139,8 +139,8 @@ namespace TraktPluginMP2.Services
 
           _mediaPortalServices.GetLogger().Info(
             "Marking movie as watched in library, movie is watched on trakt. Plays = '{0}', Title = '{1}', Year = '{2}', IMDb ID = '{3}', TMDb ID = '{4}'",
-            twm.Plays, twm.Movie.Title, twm.Movie.Year.HasValue ? twm.Movie.Year.ToString() : "<empty>",
-            twm.Movie.Ids.Imdb ?? "<empty>", twm.Movie.Ids.Tmdb.HasValue ? twm.Movie.Ids.Tmdb.ToString() : "<empty>");
+            twm.Plays, twm.Title, twm.Year.HasValue ? twm.Year.ToString() : "<empty>",
+            twm.Imdb ?? "<empty>", twm.Tmdb.HasValue ? twm.Tmdb.ToString() : "<empty>");
 
           if (_mediaPortalServices.MarkAsWatched(localMovie).Result)
           {
@@ -156,7 +156,7 @@ namespace TraktPluginMP2.Services
       _mediaPortalServices.GetLogger().Info("Trakt: finding movies to add to watched history");
 
       List<TraktSyncHistoryPostMovie> syncWatchedMovies = (from movie in watchedMovies
-                                                           where !traktWatchedMovies.ToList().Exists(c => MovieMatch(movie, c.Movie))
+                                                           where !traktWatchedMovies.ToList().Exists(c => MovieMatch(movie, c))
                                                            select new TraktSyncHistoryPostMovie
                                                            {
                                                              Ids = new TraktMovieIds
@@ -190,7 +190,7 @@ namespace TraktPluginMP2.Services
       _mediaPortalServices.GetLogger().Info("Trakt: finding movies to add to collection");
 
       List<TraktSyncCollectionPostMovie> syncCollectedMovies = (from movie in collectedMovies
-                                                                where !traktCollectedMovies.ToList().Exists(c => MovieMatch(movie, c.Movie))
+                                                                where !traktCollectedMovies.ToList().Exists(c => MovieMatch(movie, c))
                                                                 select new TraktSyncCollectionPostMovie
                                                                 {
                                          
@@ -466,19 +466,19 @@ namespace TraktPluginMP2.Services
     /// <summary>
     /// Checks if a local movie is the same as an online movie
     /// </summary>
-    private bool MovieMatch(MediaItem localMovie, ITraktMovie traktMovie)
+    private bool MovieMatch(MediaItem localMovie, Movie traktMovie)
     {
       bool result = false;
       // IMDb comparison
-      if (!string.IsNullOrEmpty(traktMovie.Ids.Imdb) && !string.IsNullOrEmpty(MediaItemAspectsUtl.GetMovieImdbId(localMovie)))
+      if (!string.IsNullOrEmpty(traktMovie.Imdb) && !string.IsNullOrEmpty(MediaItemAspectsUtl.GetMovieImdbId(localMovie)))
       {
-        result = String.Compare(MediaItemAspectsUtl.GetMovieImdbId(localMovie), traktMovie.Ids.Imdb, StringComparison.OrdinalIgnoreCase) == 0;
+        result = String.Compare(MediaItemAspectsUtl.GetMovieImdbId(localMovie), traktMovie.Imdb, StringComparison.OrdinalIgnoreCase) == 0;
       }
 
       // TMDb comparison
-      else if ((MediaItemAspectsUtl.GetMovieTmdbId(localMovie) != 0) && traktMovie.Ids.Tmdb.HasValue)
+      else if ((MediaItemAspectsUtl.GetMovieTmdbId(localMovie) != 0) && traktMovie.Tmdb.HasValue)
       {
-        result= MediaItemAspectsUtl.GetMovieTmdbId(localMovie) == traktMovie.Ids.Tmdb.Value;
+        result= MediaItemAspectsUtl.GetMovieTmdbId(localMovie) == traktMovie.Tmdb.Value;
       }
 
       // Title & Year comparison

@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TraktNet.Objects.Get.Collections;
-using TraktNet.Objects.Get.Movies;
 using TraktNet.Objects.Get.Syncs.Activities;
 using TraktNet.Objects.Get.Watched;
 using TraktNet.Services;
@@ -85,43 +84,58 @@ namespace TraktPluginMP2.Services
       SaveLastSyncActivities(_savedSyncLastActivities);
     }
 
-    private IList<ITraktMovie> RefreshUnWatchedMovies()
+    private IList<Movie> RefreshUnWatchedMovies()
     {
-      IEnumerable<ITraktWatchedMovie> previouslyWatched = CachedWatchedMovies();
+      IEnumerable<MovieWatched> previouslyWatched = CachedWatchedMovies();
       IEnumerable<ITraktWatchedMovie> currentWatched = _traktClient.GetWatchedMovies();
-      IEnumerable<ITraktMovie> unWatchedMovies = new List<TraktMovie>();
+      IEnumerable<Movie> unWatchedMovies = new List<Movie>();
 
       // anything not in the current watched that is previously watched
       // must be unwatched now.
       if (previouslyWatched != null)
       {
         unWatchedMovies = from pw in previouslyWatched
-          where !currentWatched.Any(m => (m.Movie.Ids.Trakt == pw.Movie.Ids.Trakt || m.Movie.Ids.Imdb == pw.Movie.Ids.Imdb))
-          select new TraktMovie
+          where !currentWatched.Any(m => (m.Movie.Ids.Trakt == pw.TraktId || m.Movie.Ids.Imdb == pw.Imdb))
+          select new Movie
           {
-            Ids = pw.Movie.Ids,
-            Title = pw.Movie.Title,
-            Year = pw.Movie.Year
+            Imdb = pw.Imdb,
+            TraktId = pw.TraktId,
+            Tmdb = pw.Tmdb,   
+            Title = pw.Title,
+            Year = pw.Year
           };
       }
-
       return unWatchedMovies.ToList();
     }
 
-    private IList<ITraktWatchedMovie> RefreshWatchedMovies()
+    private IList<MovieWatched> RefreshWatchedMovies()
     {
-      IEnumerable<ITraktWatchedMovie> watchedMovies;
+      IEnumerable<MovieWatched> watchedMovies;
       if (IsCacheInitialized(FileName.WatchedMovies.Value) && _onlineSyncLastActivities.Movies.WatchedAt == _savedSyncLastActivities.Movies.WatchedAt)
       {
         watchedMovies = CachedWatchedMovies();
       }
       else
       {
-        watchedMovies = _traktClient.GetWatchedMovies();
-        SaveWatchedMovies(watchedMovies);
+        watchedMovies = GetWatchedMoviesFromOnlineAndSaveItToCache();
         _savedSyncLastActivities.Movies.WatchedAt = _onlineSyncLastActivities.Movies.WatchedAt;
       }
       return watchedMovies.ToList();
+    }
+
+    private IList<EpisodeWatched> RefreshWatchedEpisodes()
+    {
+      IEnumerable<EpisodeWatched> watchedEpisodes;
+      if (IsCacheInitialized(FileName.WatchedEpisodes.Value) && _onlineSyncLastActivities.Episodes.WatchedAt == _savedSyncLastActivities.Episodes.WatchedAt)
+      {
+        watchedEpisodes = GetWatchedEpisodesFromCache();
+      }
+      else
+      {
+        watchedEpisodes = GetWatchedEpisodesFromOnlineAndSaveItToCache();
+        _savedSyncLastActivities.Episodes.WatchedAt = _onlineSyncLastActivities.Episodes.WatchedAt;
+      }
+      return watchedEpisodes.ToList();
     }
 
     private bool IsCacheInitialized(string file)
@@ -130,17 +144,16 @@ namespace TraktPluginMP2.Services
       return _fileOperations.FileExists(filePath);
     }
 
-    private IList<ITraktCollectionMovie> RefreshCollectedMovies()
+    private IList<MovieCollected> RefreshCollectedMovies()
     {
-      IEnumerable<ITraktCollectionMovie> collectedMovies;
+      IList<MovieCollected> collectedMovies;
       if (IsCacheInitialized(FileName.CollectedMovies.Value) && _onlineSyncLastActivities.Movies.CollectedAt == _savedSyncLastActivities.Movies.CollectedAt)
       {
         collectedMovies = CachedCollectedMovies();
       }
       else
       {
-        collectedMovies = _traktClient.GetCollectedMovies();
-        SaveCollectedMovies(collectedMovies);
+        collectedMovies = GetCollectedMoviesFromOnlineAndSaveItToCache();
         _savedSyncLastActivities.Movies.CollectedAt = _onlineSyncLastActivities.Movies.CollectedAt;
       }
       return collectedMovies.ToList();
@@ -205,25 +218,47 @@ namespace TraktPluginMP2.Services
     {
       IEnumerable<ITraktWatchedShow> watchedShows = _traktClient.GetWatchedShows();
       string watchedEpisodesFilePath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.WatchedEpisodes.Value);
-      IEnumerable<ITraktWatchedShow> traktWatchedShows = watchedShows.ToList();
+      IList<ITraktWatchedShow> traktWatchedShows = watchedShows.ToList();
       string watchedEpisodesJson = TraktSerializationService.SerializeCollectionAsync(traktWatchedShows).Result;
       _fileOperations.FileWriteAllText(watchedEpisodesFilePath, watchedEpisodesJson, Encoding.UTF8);
 
       return ConvertWatchedShowsToWatchedEpisodes(traktWatchedShows);
     }
 
-    private IEnumerable<EpisodeCollected> GetCollectedEpisodesFromOnlineAndSaveItToCache()
+    private IList<EpisodeCollected> GetCollectedEpisodesFromOnlineAndSaveItToCache()
     {
       IEnumerable<ITraktCollectionShow> collectedShows = _traktClient.GetCollectedShows();
       string collectedEpisodesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.CollectedEpisodes.Value);
-      IEnumerable<ITraktCollectionShow> traktCollectionShows = collectedShows.ToList();
+      IList<ITraktCollectionShow> traktCollectionShows = collectedShows.ToList();
       string collectedEpisodesJson = TraktSerializationService.SerializeCollectionAsync(traktCollectionShows).Result;
       _fileOperations.FileWriteAllText(collectedEpisodesPath, collectedEpisodesJson, Encoding.UTF8);
 
       return ConvertCollectionShowsToCollectedEpisodes(traktCollectionShows);
     }
 
-    private static IEnumerable<EpisodeCollected> ConvertCollectionShowsToCollectedEpisodes(IEnumerable<ITraktCollectionShow> traktCollectionShows)
+    private IList<MovieWatched> GetWatchedMoviesFromOnlineAndSaveItToCache()
+    {
+      IEnumerable<ITraktWatchedMovie> watchedMovies = _traktClient.GetWatchedMovies();
+      string watchedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.WatchedMovies.Value);
+      IList<ITraktWatchedMovie> traktWatchedMovies = watchedMovies.ToList();
+      string watchedMoviesJson = TraktSerializationService.SerializeCollectionAsync(traktWatchedMovies).Result;
+      _fileOperations.FileWriteAllText(watchedMoviesPath, watchedMoviesJson, Encoding.UTF8);
+
+      return ConvertWatchedMoviesToMovieWatched(traktWatchedMovies);
+    }
+
+    private IList<MovieCollected> GetCollectedMoviesFromOnlineAndSaveItToCache()
+    {
+      IEnumerable<ITraktCollectionMovie> collectedMovies = _traktClient.GetCollectedMovies();
+      string collectedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.CollectedMovies.Value);
+      IList<ITraktCollectionMovie> traktCollectionMovies = collectedMovies.ToList();
+      string collectedMoviesJson = TraktSerializationService.SerializeCollectionAsync(traktCollectionMovies).Result;
+      _fileOperations.FileWriteAllText(collectedMoviesPath, collectedMoviesJson, Encoding.UTF8);
+
+      return ConvertCollectionMoviesToMovieCollections(traktCollectionMovies);
+    }
+
+    private IList<EpisodeCollected> ConvertCollectionShowsToCollectedEpisodes(IEnumerable<ITraktCollectionShow> traktCollectionShows)
     {
       IList<EpisodeCollected> episodesCollected = new List<EpisodeCollected>();
       foreach (ITraktCollectionShow show in traktCollectionShows)
@@ -249,21 +284,6 @@ namespace TraktPluginMP2.Services
       return episodesCollected;
     }
 
-    private IList<EpisodeWatched> RefreshWatchedEpisodes()
-    {
-      IEnumerable<EpisodeWatched> watchedEpisodes;
-      if (IsCacheInitialized(FileName.WatchedEpisodes.Value) && _onlineSyncLastActivities.Episodes.WatchedAt == _savedSyncLastActivities.Episodes.WatchedAt)
-      {
-        watchedEpisodes = GetWatchedEpisodesFromCache();
-      }
-      else
-      {
-        watchedEpisodes = GetWatchedEpisodesFromOnlineAndSaveItToCache();
-        _savedSyncLastActivities.Episodes.WatchedAt = _onlineSyncLastActivities.Episodes.WatchedAt;
-      }
-      return watchedEpisodes.ToList();
-    }
-
     private IList<EpisodeCollected> RefreshCollectedEpisodes()
     {
       IEnumerable<EpisodeCollected> collectedEpisodes;
@@ -279,7 +299,7 @@ namespace TraktPluginMP2.Services
       return collectedEpisodes.ToList();
     }
 
-    private IEnumerable<EpisodeCollected> GetCollectedEpisodesFromCache()
+    private IList<EpisodeCollected> GetCollectedEpisodesFromCache()
     {
       IEnumerable<ITraktCollectionShow> traktCollectionShows = new List<ITraktCollectionShow>();
 
@@ -324,7 +344,7 @@ namespace TraktPluginMP2.Services
       return TraktSerializationService.DeserializeAsync<ITraktSyncLastActivities>(savedSyncActivitiesJson).Result;
     }
 
-    private IEnumerable<ITraktWatchedMovie> CachedWatchedMovies()
+    private IEnumerable<MovieWatched> CachedWatchedMovies()
     {
       IEnumerable<ITraktWatchedMovie> watchedMovies = new List<ITraktWatchedMovie>();
 
@@ -334,10 +354,30 @@ namespace TraktPluginMP2.Services
         string watchedMoviesJson = _fileOperations.FileReadAllText(watchedMoviesPath);
         watchedMovies = TraktSerializationService.DeserializeCollectionAsync<ITraktWatchedMovie>(watchedMoviesJson).Result;
       }
-      return watchedMovies;
+      return ConvertWatchedMoviesToMovieWatched(watchedMovies);
     }
 
-    private IEnumerable<ITraktCollectionMovie> CachedCollectedMovies()
+    private IList<MovieWatched> ConvertWatchedMoviesToMovieWatched(IEnumerable<ITraktWatchedMovie> watchedMovies)
+    {
+      IList<MovieWatched> moviesWatched = new List<MovieWatched>();
+
+      foreach (ITraktWatchedMovie traktWatchedMovie in watchedMovies)
+      {
+        moviesWatched.Add(new MovieWatched
+        {
+          Title = traktWatchedMovie.Title,
+          Imdb = traktWatchedMovie.Ids.Imdb,
+          Year = traktWatchedMovie.Year,
+          Tmdb = traktWatchedMovie.Ids.Tmdb,
+          TraktId = traktWatchedMovie.Ids.Trakt,
+          WatchedAt = traktWatchedMovie.LastWatchedAt,
+          Plays = traktWatchedMovie.Plays
+        });
+      }
+      return moviesWatched;
+    }
+
+    private IList<MovieCollected> CachedCollectedMovies()
     {
       IEnumerable<ITraktCollectionMovie> collectedMovies = new List<ITraktCollectionMovie>();
 
@@ -347,7 +387,26 @@ namespace TraktPluginMP2.Services
         string collectedMoviesJson = _fileOperations.FileReadAllText(collectedMoviesPath);
         collectedMovies = TraktSerializationService.DeserializeCollectionAsync<ITraktCollectionMovie>(collectedMoviesJson).Result;
       }
-      return collectedMovies;
+      return ConvertCollectionMoviesToMovieCollections(collectedMovies);
+    }
+
+    private IList<MovieCollected> ConvertCollectionMoviesToMovieCollections(IEnumerable<ITraktCollectionMovie> collectionMovies)
+    {
+      IList<MovieCollected> movieCollected = new List<MovieCollected>();
+
+      foreach (ITraktCollectionMovie traktCollectionMovie in collectionMovies)
+      {
+        movieCollected.Add(new MovieCollected
+        {
+          Title = traktCollectionMovie.Title,
+          Imdb = traktCollectionMovie.Ids.Imdb,
+          Year = traktCollectionMovie.Year,
+          Tmdb = traktCollectionMovie.Ids.Tmdb,
+          TraktId = traktCollectionMovie.Ids.Trakt,
+          CollectedAt = traktCollectionMovie.CollectedAt
+        });
+      }
+      return movieCollected;
     }
 
     private void SaveLastSyncActivities(ITraktSyncLastActivities syncLastActivities)
@@ -355,20 +414,6 @@ namespace TraktPluginMP2.Services
       string lastSyncActivitiesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.LastActivity.Value);
       string lastSyncActivitiesJson = TraktSerializationService.SerializeAsync(syncLastActivities).Result;
       _fileOperations.FileWriteAllText(lastSyncActivitiesPath, lastSyncActivitiesJson, Encoding.UTF8);
-    }
-
-    private void SaveWatchedMovies(IEnumerable<ITraktWatchedMovie> watchedMovies)
-    {
-      string watchedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.WatchedMovies.Value);
-      string watchedMoviesJson = TraktSerializationService.SerializeCollectionAsync(watchedMovies).Result;
-      _fileOperations.FileWriteAllText(watchedMoviesPath, watchedMoviesJson, Encoding.UTF8);
-    }
-
-    private void SaveCollectedMovies(IEnumerable<ITraktCollectionMovie> collectedMovies)
-    {
-      string collectedMoviesPath = Path.Combine(_mediaPortalServices.GetTraktUserHomePath(), FileName.CollectedMovies.Value);
-      string collectedMoviesJson = TraktSerializationService.SerializeCollectionAsync(collectedMovies).Result;
-      _fileOperations.FileWriteAllText(collectedMoviesPath, collectedMoviesJson, Encoding.UTF8);
     }
   }
 }
